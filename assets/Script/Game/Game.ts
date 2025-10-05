@@ -26,6 +26,8 @@ export default class Game extends cc.Component {
 
     blockList: Array<SimplelBlock> = []
 
+    // blockPool: cc.NodePool
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
@@ -49,9 +51,21 @@ export default class Game extends cc.Component {
             const row = []
 
             for (let j = 0; j < this.mapHeight; j++) {
-                const block = new SimplelBlock(this)
+                // const block = new SimplelBlock()
+
+                const { blockList, blocksGap, mapNode } = this
+
+                const blockId = Math.round(Math.random() * (blockList.length - 1))
+
+                const node = cc.instantiate(blockList[blockId].node)
+
+                // block.comp
+
+                const block = node.getComponent(SimplelBlock)
                 
-                block.init(i, j)
+                block.init(this, i, j)
+
+                // block.
 
                 row.push(block)
             }
@@ -62,5 +76,7 @@ export default class Game extends cc.Component {
 
     // private onFallBlockClick
 
-    // update (dt) {}
+    update (dt) {
+        // console.log('fire')
+    }
 }

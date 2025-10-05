@@ -1679,8 +1679,8 @@
       "__id__": 8
     },
     "_enabled": true,
-    "mapWidth": 9,
-    "mapHeight": 9,
+    "mapWidth": 5,
+    "mapHeight": 5,
     "blockSize": 40,
     "blocksGap": 5,
     "colorBlocksNode": {

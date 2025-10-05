@@ -3,25 +3,25 @@ import SimplelBlock from "../Blocks/SimpleBlock";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Game extends cc.Component {  
-    @property(cc.Integer) 
+export default class Game extends cc.Component {
+    @property(cc.Integer)
     mapWidth: number = 8
-    
-    @property(cc.Integer) 
+
+    @property(cc.Integer)
     mapHeight: number = 9
 
-    @property(cc.Integer) 
+    @property(cc.Integer)
     blockSize: number = 40
-    
-    @property(cc.Integer) 
+
+    @property(cc.Integer)
     blocksGap: number = 5
-    
+
     @property(cc.Node)
     colorBlocksNode: cc.Node = null
 
     @property(cc.Node)
     mapNode: cc.Node = null
-    
+
     map: Array<Array<SimplelBlock>> = [];
 
     blockList: Array<SimplelBlock> = []
@@ -32,7 +32,7 @@ export default class Game extends cc.Component {
 
     // onLoad () {}
 
-    
+
 
     start() {
         const width = this.mapWidth * (this.blockSize + this.blocksGap) - this.blocksGap
@@ -47,36 +47,43 @@ export default class Game extends cc.Component {
 
         this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
 
-        for (let i = 0; i < this.mapWidth; i++) {
-            const row = []
+        for (let x = 0; x < this.mapWidth; x++) {
+            const column = []
 
-            for (let j = 0; j < this.mapHeight; j++) {
-                // const block = new SimplelBlock()
+            // const spawnRow = this.mapHeight + 1
 
-                const { blockList, blocksGap, mapNode } = this
-
-                const blockId = Math.round(Math.random() * (blockList.length - 1))
-
-                const node = cc.instantiate(blockList[blockId].node)
-
-                // block.comp
-
-                const block = node.getComponent(SimplelBlock)
-                
-                block.init(this, i, j)
-
-                // block.
-
-                row.push(block)
+            for (let y = 0; y < this.mapHeight; y++) {
+                column.push(this.createBlock(x, y))
             }
 
-            this.map.push(row)
+            this.map.push(column)
         }
+    }
+
+    createBlock(x: number, y: number): SimplelBlock {
+        const { blockList } = this
+
+        const blockId = Math.round(Math.random() * (blockList.length - 1))
+
+        const node = cc.instantiate(blockList[blockId].node)
+
+        const block = node.getComponent(SimplelBlock)
+
+        block.init(this, x, y)
+
+        return block
     }
 
     // private onFallBlockClick
 
-    update (dt) {
+    update(dt) {
+        this.map.forEach((column, x) => {
+            const lastIndex = this.mapHeight - 1
+
+            if (!column[lastIndex]) {
+                column[lastIndex] = this.createBlock(x, lastIndex)
+            }
+        })
         // console.log('fire')
     }
 }

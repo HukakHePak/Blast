@@ -35,8 +35,8 @@ export default class Game extends cc.Component {
 
 
     start() {
-        const width = this.mapWidth * (this.blockSize + this.blocksGap) - this.blocksGap
-        const height = this.mapHeight * (this.blockSize + this.blocksGap) - this.blocksGap
+        const width = (this.mapWidth - 1) * (this.blockSize + this.blocksGap) 
+        const height = (this.mapHeight - 1) * (this.blockSize + this.blocksGap) 
 
         this.mapNode.width = width
         this.mapNode.height = height

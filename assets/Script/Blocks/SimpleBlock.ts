@@ -7,6 +7,14 @@ const { ccclass, property } = cc._decorator;
 //     RED: 1
 // })
 
+export enum SimpleBlockState {
+    NONE = 'none',
+    IDLE = 'idle',
+    FALL = 'fall',
+    SPAWN = 'spawn',
+    TOUCHED = 'touched',
+}
+
 @ccclass
 export default class SimplelBlock extends cc.Component {
     // color: string = 'blue'
@@ -20,6 +28,7 @@ export default class SimplelBlock extends cc.Component {
 
     column: number = 0
     row: number = 0
+    state: SimpleBlockState = SimpleBlockState.NONE
 
     game: Game
 
@@ -47,6 +56,8 @@ export default class SimplelBlock extends cc.Component {
 
         // this.type = blockList[blockId].type
 
+        this.state = SimpleBlockState.SPAWN
+
         this.node.active = true
 
         this.column = x
@@ -55,7 +66,16 @@ export default class SimplelBlock extends cc.Component {
         this.node.x = (this.node.width + blocksGap) * x
         this.node.y = (this.node.height + blocksGap) * y
 
+        this.node.scale = 0
+
         mapNode.addChild(this.node)
+
+        cc.tween(this.node)
+            .delay(0.5)
+            .to(0.4, { scale: 1.1 })
+            .to(0.1, { scale: 1 })
+            .call(() => this.state = SimpleBlockState.IDLE)
+            .start()
 
         // this.map
 
@@ -72,14 +92,11 @@ export default class SimplelBlock extends cc.Component {
     }
 
     onTouch(isTrigger = false): number {
-        const { map } = this.game
         const { column, row } = this
 
-        // неочевидная проверка: если хоть раз прокнет touchSame, значит есть одинаковые блоки
 
         if (!isTrigger) {
-            // this.node.active = false
-
+            this.state = SimpleBlockState.TOUCHED
             this.remove()
         }
 
@@ -88,28 +105,35 @@ export default class SimplelBlock extends cc.Component {
             + this.touchSame(column, row - 1)
             + this.touchSame(column, row + 1)
 
+        // неочевидная проверка: если хоть раз прокнет touchSame, значит есть одинаковые блоки
 
-        if (isTrigger) {
-            console.log({ strik })
+        if (isTrigger && strik) {
+            this.remove()
+            console.log({ strik: strik + 1, touched: this.state })
         }
 
         return strik
     }
 
-    remove() {
-        // this.node.active = false
-        this.game.mapNode.removeChild(this.node)
-        this.game.map[this.column][this.row] = null
-    }
-
     touchSame(x: number, y: number): number {
         const block = this.game.map[x]?.[y]
 
-        if (block?.type === this.type && block?.node.active) {
+        if (block?.type === this.type && block.state !== SimpleBlockState.TOUCHED) {
             return block.onTouch() + 1
         }
 
         return 0
+    }
+
+    remove() {
+        cc.tween(this.node)
+            .to(0.1, { scale: 1.1 })
+            .to(0.4, { scale: 0 })
+            .call(() => {
+                this.game.mapNode.removeChild(this.node)
+                this.game.map[this.column][this.row] = null
+            })
+            .start()
     }
 
     get downBlock() {
@@ -133,18 +157,26 @@ export default class SimplelBlock extends cc.Component {
         // console.log(this.game)
         const downBlock = this.currentMapColumn[this.row - 1]
 
-        if(this.game && !downBlock && this.row) {
+        if (this.game && !downBlock && this.row) {
             const emptyRow = this.currentMapColumn.findIndex((block) => !block)
 
-            if(emptyRow > -1) {
+            if (emptyRow > -1) {
                 this.currentMapColumn[emptyRow] = this
 
                 this.currentMapColumn[this.row] = null
 
                 this.row = emptyRow
 
-                
-                this.node.y = (this.node.height + this.game.blocksGap) * emptyRow
+
+                // this.node.y = (this.node.height + this.game.blocksGap) * emptyRow
+
+                this.state = SimpleBlockState.FALL
+
+                cc.tween(this.node)
+                    .to(0.5, { position: cc.v3(this.node.x, (this.node.height + this.game.blocksGap) * emptyRow) })
+                    .call(() => this.state = SimpleBlockState.IDLE)
+                    .start()
+
             }
             // console.log(emptyIndex)
 
@@ -155,7 +187,7 @@ export default class SimplelBlock extends cc.Component {
     update = (dt) => {
         // console.log(this)
 
-        if(this.node.active) {
+        if (this.node.active) {
             this.fallDown()
         }
 

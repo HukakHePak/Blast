@@ -78,7 +78,11 @@ export default class SimplelBlock extends cc.Component {
         const { map } = this.game
         const { column, row } = this
 
-        this.touched = true
+        // неочевидная проверка: если хоть раз прокнет touchSame, значит есть одинаковые блоки
+
+        if(!isTrigger) {
+            this.node.active = false
+        }
 
         const strik = this.touchSame(column - 1, row)
             + this.touchSame(column + 1, row)
@@ -87,8 +91,7 @@ export default class SimplelBlock extends cc.Component {
 
 
         if (isTrigger) {
-
-            console.log(strik + 1)
+            console.log(strik)
         }
 
         return strik
@@ -97,7 +100,7 @@ export default class SimplelBlock extends cc.Component {
     touchSame(x: number, y: number): number {
         const block = this.game.map[x]?.[y]
 
-        if (block?.type === this.type && !block.touched) {
+        if (block?.type === this.type && block.node.active) {
             return block.onTouch() + 1
         }
 

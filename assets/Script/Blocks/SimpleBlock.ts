@@ -7,6 +7,8 @@ const { ccclass, property } = cc._decorator;
 //     RED: 1
 // })
 
+
+
 export enum SimpleBlockState {
     NONE = 'none',
     IDLE = 'idle',
@@ -23,12 +25,20 @@ export default class SimplelBlock extends cc.Component {
     @property
     type: string = ''
 
+    @property(cc.Integer)
+
+    animationDurability = 0.5
+    longAnimationMultiplier = 0.8
+
+
     // @property(cc.Node)
     // colorBlocksNode: cc.Node = null
 
     column: number = 0
     row: number = 0
     state: SimpleBlockState = SimpleBlockState.NONE
+
+
 
     game: Game
 
@@ -70,10 +80,10 @@ export default class SimplelBlock extends cc.Component {
 
         mapNode.addChild(this.node)
 
-        cc.tween(this.node)
-            .delay(0.5)
-            .to(0.4, { scale: 1.1 })
-            .to(0.1, { scale: 1 })
+        cc.tween(this.node) // TODO: Animations.ts
+            .delay(this.animationDurability / this.game.animationSpeed)
+            .to(this.animationDurability * this.longAnimationMultiplier / this.game.animationSpeed, { scale: 1.1 })
+            .to(this.animationDurability * (1 - this.longAnimationMultiplier) / this.game.animationSpeed, { scale: 1 })
             .call(() => this.state = SimpleBlockState.IDLE)
             .start()
 
@@ -126,9 +136,9 @@ export default class SimplelBlock extends cc.Component {
     }
 
     remove() {
-        cc.tween(this.node)
-            .to(0.1, { scale: 1.1 })
-            .to(0.4, { scale: 0 })
+        cc.tween(this.node) // TODO: make animation clip
+            .to(this.animationDurability * (1 - this.longAnimationMultiplier) / this.game.animationSpeed, { scale: 1.1 })
+            .to(this.animationDurability * this.longAnimationMultiplier / this.game.animationSpeed, { scale: 0 })
             .call(() => {
                 this.game.mapNode.removeChild(this.node)
                 this.game.map[this.column][this.row] = null
@@ -173,7 +183,7 @@ export default class SimplelBlock extends cc.Component {
                 this.state = SimpleBlockState.FALL
 
                 cc.tween(this.node)
-                    .to(0.5, { position: cc.v3(this.node.x, (this.node.height + this.game.blocksGap) * emptyRow) })
+                    .to(this.animationDurability / this.game.animationSpeed, { position: cc.v3(this.node.x, (this.node.height + this.game.blocksGap) * emptyRow) })
                     .call(() => this.state = SimpleBlockState.IDLE)
                     .start()
 

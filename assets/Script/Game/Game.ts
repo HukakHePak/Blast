@@ -22,6 +22,12 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     mapNode: cc.Node = null
 
+    @property(cc.Integer)
+    animationSpeed = 1
+
+    @property(cc.Node)
+    mapBackgroundNode: cc.Node = null
+
     map: Array<Array<SimplelBlock>> = [];
 
     blockList: Array<SimplelBlock> = []
@@ -34,13 +40,15 @@ export default class Game extends cc.Component {
 
 
 
-    start() {
+    start() { // TODO: spawn
         const width = (this.mapWidth - 1) * (this.blockSize + this.blocksGap) 
         const height = (this.mapHeight - 1) * (this.blockSize + this.blocksGap) 
 
         this.mapNode.width = width
         this.mapNode.height = height
 
+        this.mapBackgroundNode.width = (width + (this.blockSize + this.blocksGap) * 2) / this.mapBackgroundNode.scale
+        this.mapBackgroundNode.height = (height + (this.blockSize + this.blocksGap) * 2) / this.mapBackgroundNode.scale
 
         // this.node.x = -width / 2
         // this.node.y = -height / 2

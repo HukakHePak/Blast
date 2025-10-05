@@ -10,14 +10,18 @@
   "packable": true,
   "width": 272,
   "height": 258,
-  "platformSettings": {},
+  "platformSettings": {
+    "default": {
+      "formats": []
+    }
+  },
   "subMetas": {
     "bg_frame_play": {
       "ver": "1.0.6",
       "uuid": "652ed139-bc63-45c6-af1a-aa9258fff729",
       "importer": "sprite-frame",
       "rawTextureUuid": "90056050-1721-469a-be2c-5d6d9bc11434",
-      "trimType": "auto",
+      "trimType": "custom",
       "trimThreshold": 1,
       "rotated": false,
       "offsetX": 0,
@@ -28,10 +32,10 @@
       "height": 258,
       "rawWidth": 272,
       "rawHeight": 258,
-      "borderTop": 0,
-      "borderBottom": 0,
-      "borderLeft": 0,
-      "borderRight": 0,
+      "borderTop": 112,
+      "borderBottom": 99,
+      "borderLeft": 112,
+      "borderRight": 114,
       "subMetas": {}
     }
   }

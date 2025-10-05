@@ -448,7 +448,7 @@
       }
     ],
     "_prefab": null,
-    "_opacity": 39.015,
+    "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
       "r": 252,
@@ -1619,7 +1619,7 @@
     "node": {
       "__id__": 9
     },
-    "_enabled": true,
+    "_enabled": false,
     "_materials": [
       {
         "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
@@ -1679,8 +1679,8 @@
       "__id__": 8
     },
     "_enabled": true,
-    "mapWidth": 3,
-    "mapHeight": 4,
+    "mapWidth": 9,
+    "mapHeight": 9,
     "blockSize": 40,
     "blocksGap": 5,
     "colorBlocksNode": {

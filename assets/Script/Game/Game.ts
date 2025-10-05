@@ -22,7 +22,9 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     mapNode: cc.Node = null
     
-    map?: Array<Array<cc.Node>> = [];
+    map: Array<Array<SimplelBlock>> = [];
+
+    blockList: Array<SimplelBlock> = []
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -41,48 +43,17 @@ export default class Game extends cc.Component {
         // this.node.x = -width / 2
         // this.node.y = -height / 2
 
-        const blocksList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
+        this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
 
         for (let i = 0; i < this.mapWidth; i++) {
             const row = []
 
             for (let j = 0; j < this.mapHeight; j++) {
-
-                const blockId = Math.ceil(Math.random() * (blocksList.length - 1))
-
-                console.log(blockId)
-
-
-
-                const block = cc.instantiate(blocksList[blockId].node)
-
-                // cc.
-
-
-
+                const block = new SimplelBlock(this)
                 
-                block.active = true
-                
-                // block.row
+                block.init(i, j)
 
-                const gap = this.blockSize + this.blocksGap
-                
-                block.x = gap * i
-                block.y = gap * j
-                
-                this.mapNode.addChild(block)
-                
-                
-                
-                // block.name
-                
-                // block.type
-                
                 row.push(block)
-
-               
-
-                // console.log(block.getComponent(SimplelBlock))
             }
 
             this.map.push(row)

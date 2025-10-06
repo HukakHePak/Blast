@@ -16,17 +16,23 @@ export default class Game extends cc.Component {
     @property(cc.Integer)
     blocksGap: number = 5
 
+    @property(cc.Integer)
+    animationSpeed = 1
+
+    @property(cc.Integer)
+    minimalChainLength = 1      // TODO: чтоб работало, нужно поменять алгоритм сжигания
+
     @property(cc.Node)
     colorBlocksNode: cc.Node = null
 
     @property(cc.Node)
     mapNode: cc.Node = null
 
-    @property(cc.Integer)
-    animationSpeed = 1
-
     @property(cc.Node)
     mapBackgroundNode: cc.Node = null
+
+    @property(cc.Node)
+    scoresNode: cc.Node = null
 
     map: Array<Array<SimplelBlock>> = [];
 
@@ -41,20 +47,24 @@ export default class Game extends cc.Component {
 
 
     start() { // TODO: spawn
-        const width = (this.mapWidth - 1) * (this.blockSize + this.blocksGap) 
-        const height = (this.mapHeight - 1) * (this.blockSize + this.blocksGap) 
+        const width = (this.mapWidth - 1) * (this.blockSize + this.blocksGap)
+        const height = (this.mapHeight - 1) * (this.blockSize + this.blocksGap)
 
         this.mapNode.width = width
         this.mapNode.height = height
 
-        this.mapBackgroundNode.width = (width + (this.blockSize + this.blocksGap) * 2) / this.mapBackgroundNode.scale
-        this.mapBackgroundNode.height = (height + (this.blockSize + this.blocksGap) * 2) / this.mapBackgroundNode.scale
+        this.mapBackgroundNode.width = width + (this.blockSize + this.blocksGap) * 2
+        this.mapBackgroundNode.height = height + (this.blockSize + this.blocksGap) * 2
 
         // this.node.x = -width / 2
         // this.node.y = -height / 2
 
         this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
 
+        this.fillMap()
+    }
+
+    fillMap() {
         for (let x = 0; x < this.mapWidth; x++) {
             const column = []
 
@@ -77,7 +87,7 @@ export default class Game extends cc.Component {
 
         const block = node.getComponent(SimplelBlock)
 
-        block.init(this, x, y)
+        block.spawn(this, x, y)
 
         return block
     }

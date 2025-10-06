@@ -1,4 +1,5 @@
 import Game from "../Game/Game";
+import Scores from "../Scores/Scores";
 
 const { ccclass, property } = cc._decorator;
 
@@ -38,7 +39,7 @@ export default class SimplelBlock extends cc.Component {
     row: number = 0
     state: SimpleBlockState = SimpleBlockState.NONE
 
-
+    scores: Scores = null
 
     game: Game
 
@@ -55,10 +56,12 @@ export default class SimplelBlock extends cc.Component {
 
 
 
-    init(game: Game, x: number, y: number): SimplelBlock {
+    spawn(game: Game, x: number, y: number): SimplelBlock {
         this.game = game
 
-        const { blockList, blocksGap, mapNode } = this.game
+        const { scoresNode, blocksGap, mapNode, blockSize } = this.game
+
+        this.scores = scoresNode.getComponent(Scores)
 
         // const blockId = Math.round(Math.random() * (blockList.length - 1))
 
@@ -72,6 +75,9 @@ export default class SimplelBlock extends cc.Component {
 
         this.column = x
         this.row = y
+
+        this.node.width = blockSize
+        this.node.height = blockSize
 
         this.node.x = (this.node.width + blocksGap) * x
         this.node.y = (this.node.height + blocksGap) * y
@@ -110,19 +116,21 @@ export default class SimplelBlock extends cc.Component {
             this.remove()
         }
 
-        const strik = this.touchSame(column - 1, row)
+        const chainLength = this.touchSame(column - 1, row)
             + this.touchSame(column + 1, row)
             + this.touchSame(column, row - 1)
             + this.touchSame(column, row + 1)
 
         // неочевидная проверка: если хоть раз прокнет touchSame, значит есть одинаковые блоки
 
-        if (isTrigger && strik) {
+        if (isTrigger && chainLength) {
             this.remove()
-            console.log({ strik: strik + 1, touched: this.state })
+            // console.log({ chainLength: chainLength + 1, touched: this.state })
+
+            this.scores.add(chainLength)
         }
 
-        return strik
+        return chainLength
     }
 
     touchSame(x: number, y: number): number {

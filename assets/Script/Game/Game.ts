@@ -1,11 +1,10 @@
 import LevelController from "../Level/LevelController";
-import LevelMap from "../Level/LevelMap";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Game extends cc.Component {
-    @property(cc.Integer)
+    @property(cc.Integer)       // зачем?  
     animationSpeed = 1
 
     @property(cc.Integer)

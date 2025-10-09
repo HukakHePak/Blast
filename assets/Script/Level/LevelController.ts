@@ -1,18 +1,10 @@
-// Learn TypeScript:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
-
 import Game from "../Game/Game";
-import LevelMap from "./LevelMap";
+import MapController, { MapControllerState } from "../Map/MapController";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class LevelController extends cc.Component {
-
     @property(cc.Node)
     victoryNode: cc.Node = null;
 
@@ -28,21 +20,29 @@ export default class LevelController extends cc.Component {
     @property(cc.Node)
     mapNode: cc.Node = null
 
-    @property
-    steps = 0
+    mapController: MapController = null
 
-    @property
-    scores = 0
+    // @property
+    steps = 0
 
     @property
     stepsLimit = 10
 
+    // @property
+    scores = 0
+
     @property
     scoresLimit = 100
 
+    mapShakes = 0
+
+    @property
+    mapShakesLimit = 3
+
+
     // levelMap: LevelMap
 
-    // game: Game = null
+    game: Game = null
 
 
     // LIFE-CYCLE CALLBACKS:
@@ -50,44 +50,52 @@ export default class LevelController extends cc.Component {
     // onLoad () {}
 
     start() {
-        // this.levelMap = this.mapNode.getComponent(LevelMap)
+        this.mapController = this.mapNode.getComponent(MapController)
         this.victoryNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
         this.defeatNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
     }
 
     init(game: Game) {
-        // this.game = game
+        this.game = game
 
         // this.levelMap.init(game)
     }
 
-    fire(count) {
-        
+    fire(count: number) {
         this.scores += count
         this.steps += 1
 
-        if(this.scores >= this.scoresLimit) {
+        if (this.scores >= this.scoresLimit) {
             this.victory()
 
             return
         }
 
-        if(this.steps >= this.stepsLimit) {
+        // const mapNeedShake = !this.mapController.needShake
+
+        // if(this.mapController.needShake && this.mapShakes < this.mapShakesLimit) {
+        //     this.mapController.shake()
+        // }
+
+        
+
+        this.scheduleOnce(() => {
+            if (!this.mapController.needShake) return
+
+            if (this.mapShakes < this.mapShakesLimit) {
+                this.mapController.clear()
+                this.mapShakes += 1
+            } else {
+                this.defeat()
+            }
+        }, this.game.animationDurability * 4)
+
+        // cc.act
+
+        if (this.steps >= this.stepsLimit) {
             this.defeat()
         }
-
-        // this.stepsLabel.string = 
     }
-
-    // addScores(count: number) {
-    //     this.scores += count
-    //     this.scoresLabel.string = `${this.scores}/${this.scoresLimit}`
-    // }
-
-    // step() {
-    //     this.steps += 1
-    //     this.stepsLabel.string = `${this.stepsLimit - this.steps}`
-    // }
 
     victory() {
         this.victoryNode.active = true
@@ -102,10 +110,16 @@ export default class LevelController extends cc.Component {
         this.defeatNode.active = false
         this.steps = 0
         this.scores = 0
+        // this.mapShakes = 0
     }
 
-    update(dt) { 
+    updateLabels() {
         this.stepsLabel.string = `${this.stepsLimit - this.steps}`
         this.scoresLabel.string = `${this.scores}/${this.scoresLimit}`
+    }
+
+    update(dt) {
+        this.updateLabels()
+        // this.checkShakes()
     }
 }

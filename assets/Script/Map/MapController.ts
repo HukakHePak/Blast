@@ -1,9 +1,18 @@
 import SimplelBlock from "../Blocks/SimpleBlock";
+import Game from "../Game/Game";
+import LevelController from "../Level/LevelController";
 
 const { ccclass, property } = cc._decorator;
 
+export enum MapControllerState {
+    NONE = 'none',
+    IDLE = 'idle',
+    SPAWN = 'spawn',
+    NEED = 'need_shake'
+}
+
 @ccclass
-export default class LevelMap extends cc.Component {
+export default class MapController extends cc.Component {
     @property(cc.Integer)
     mapWidth: number = 8
 
@@ -28,17 +37,19 @@ export default class LevelMap extends cc.Component {
     @property(cc.Node)
     mapBackgroundNode: cc.Node = null
 
-    // @property(cc.Node)
-    // levelControllerNode: cc.Node = null
+    @property(cc.Node)
+    gameNode: cc.Node = null
+
+    game: Game = null
 
 
-    mapData: Array<Array<SimplelBlock>> = [];
+    mapData: Array<Array<SimplelBlock>> = []; // TODO: а зачем, собсна, массив? Сделать Map
 
     blockList: Array<SimplelBlock> = []
 
+    // state: MapControllerState = MapControllerState.NONE
 
 
-    // levelController: LevelController = null
 
     // blockPool: cc.NodePool
 
@@ -47,7 +58,10 @@ export default class LevelMap extends cc.Component {
     // onLoad () {}
 
 
+
     start() { // TODO: spawn
+        this.game = this.gameNode.getComponent(Game)
+
         const width = (this.mapWidth - 1) * (this.blockSize + this.blocksGap)
         const height = (this.mapHeight - 1) * (this.blockSize + this.blocksGap)
 
@@ -66,21 +80,41 @@ export default class LevelMap extends cc.Component {
 
         // this.levelController.init(this)
 
-        this.fillMap()
-    }
+        // this.shake()
 
-    private fillMap() {
         for (let x = 0; x < this.mapWidth; x++) {
             const column = []
 
-            // const spawnRow = this.mapHeight + 1
-
             for (let y = 0; y < this.mapHeight; y++) {
-                column.push(this.createBlock(x, y))
+                column.push()
             }
 
             this.mapData.push(column)
         }
+    }
+
+    clear() {
+        this.mapData.forEach(column => {
+            column.forEach((block, y) => {
+                column[y].remove()
+            })
+        })
+
+        // this.state = MapControllerState.NONE
+    }
+
+    get needShake() {
+        const need = !this.mapData.some((column, x) => {
+            return column.some((block, y) => {
+                console.log({ block, up: block?.type === column[y + 1]?.type, left: block?.type === this.mapData[x + 1]?.[y].type })
+
+                return block?.type === column[y + 1]?.type || block?.type === this.mapData[x + 1]?.[y].type
+            })
+        })
+
+        console.log({ need })
+
+        return need
     }
 
     private createBlock(x: number, y: number): SimplelBlock {
@@ -106,14 +140,30 @@ export default class LevelMap extends cc.Component {
         this.mapData[column][row] = null
     }
 
-    update(dt) {
+    spawnNewBlocks() {
+        // let spawned = false
+
         this.mapData.forEach((column, x) => {
             const lastIndex = this.mapHeight - 1
 
             if (!column[lastIndex]) {
                 column[lastIndex] = this.createBlock(x, lastIndex)
+
+                // this.scheduleOnce(() => this.checkShakes(), this.game.animationDurability * 2)
+                // // spawned = true
             }
         })
-        // console.log('fire')
+
+        // if (spawned) {
+        //     this.state = MapControllerState.SPAWN
+        // } else if (this.state === MapControllerState.SPAWN) {
+
+
+        //     this.state = this.needShake ? MapControllerState.NEED : MapControllerState.IDLE
+        // }
+    }
+
+    update(dt) {
+        this.spawnNewBlocks()
     }
 }

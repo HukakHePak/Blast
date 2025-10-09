@@ -1,5 +1,5 @@
 import Game from "../Game/Game";
-import LevelMap from "../Level/LevelMap";
+import MapController from "../Map/MapController";
 
 const { ccclass, property } = cc._decorator;
 
@@ -21,40 +21,21 @@ export default class SimplelBlock extends cc.Component {
 
     game: Game
 
-    levelMap: LevelMap
-
-    // @property()
-
-
-    // @property(cc.Node)
-    // colorBlocksNode: cc.Node = null
+    mapController: MapController
 
     column: number = 0
     row: number = 0
     state: SimpleBlockState = SimpleBlockState.NONE
 
-    // scores: Scores = null
-    // steps: Steps = null
-
-
-
-    // @property(cc.Label)
-    // label: cc.Label = null;
-
-    // @property
-    // text: string = 'hello';
-
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
-
-
-    spawn(levelMap: LevelMap, x: number, y: number): SimplelBlock {
-        this.levelMap = levelMap
+    spawn(mapController: MapController, x: number, y: number): SimplelBlock {
+        this.mapController = mapController
         this.game = this.gameNode.getComponent(Game)
 
-        const { blocksGap, blockSize } = levelMap
+        const { blocksGap, blockSize } = mapController
         const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
 
         this.state = SimpleBlockState.SPAWN
@@ -76,7 +57,9 @@ export default class SimplelBlock extends cc.Component {
             .delay(animationDurability / animationSpeed)
             .to(animationDurability * longAnimationMultiplier / animationSpeed, { scale: 1.1 })
             .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1 })
-            .call(() => this.state = SimpleBlockState.IDLE)
+            .call(() => {
+                this.state = SimpleBlockState.IDLE
+            })
             .start()
 
         this.node.on(cc.Node.EventType.TOUCH_START, () => this.onTouch(true))
@@ -104,7 +87,6 @@ export default class SimplelBlock extends cc.Component {
 
         if (isTrigger && chainLength) {
             this.remove()
-
             this.game.levelController.fire(chainLength)
         }
 
@@ -112,7 +94,7 @@ export default class SimplelBlock extends cc.Component {
     }
 
     touchSame(x: number, y: number): number {
-        const block = this.levelMap.mapData[x]?.[y]
+        const block = this.mapController.mapData[x]?.[y]
 
         if (block?.type === this.type && block.state !== SimpleBlockState.TOUCHED) {
             return block.onTouch() + 1
@@ -128,21 +110,20 @@ export default class SimplelBlock extends cc.Component {
             .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1.1 })
             .to(animationDurability * longAnimationMultiplier / animationSpeed, { scale: 0 })
             .call(() => {
-                this.levelMap.removeBlock(this)
+                this.mapController.removeBlock(this)
             })
             .start()
     }
 
     get currentMapColumn() {
-        return this.levelMap?.mapData[this.column]
+        return this.mapController?.mapData[this.column]
     }
 
 
     fallDown() {
-        const { blocksGap, mapNode, blockSize } = this.levelMap
-        const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
+        const { blocksGap } = this.mapController
+        const { animationDurability, animationSpeed } = this.game
 
-        // console.log(this.game)
         const downBlock = this.currentMapColumn[this.row - 1]
 
         if (this.currentMapColumn && !downBlock && this.row) {
@@ -155,16 +136,12 @@ export default class SimplelBlock extends cc.Component {
 
                 this.row = emptyRow
 
-
-                // this.node.y = (this.node.height + this.game.blocksGap) * emptyRow
-
                 this.state = SimpleBlockState.FALL
 
                 cc.tween(this.node)
                     .to(animationDurability / animationSpeed, { position: cc.v3(this.node.x, (this.node.height + blocksGap) * emptyRow) })
                     .call(() => this.state = SimpleBlockState.IDLE)
                     .start()
-
             }
         }
     }

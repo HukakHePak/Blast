@@ -18,7 +18,7 @@ export default class Steps extends cc.Component {
     }
 
     step() {
-        this.steps = Math.max(this.steps - 1, 0)
+        this.steps = this.steps - 1
 
         this.updateLabel()
     }

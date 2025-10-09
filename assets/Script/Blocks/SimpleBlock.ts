@@ -1,6 +1,5 @@
 import Game from "../Game/Game";
-import Scores from "../Scores/Scores";
-import Steps from "../Steps/Steps";
+import LevelMap from "../Level/LevelMap";
 
 const { ccclass, property } = cc._decorator;
 
@@ -17,10 +16,15 @@ export default class SimplelBlock extends cc.Component {
     @property
     type: string = ''
 
-    @property(cc.Integer)
+    @property(cc.Node)
+    gameNode: cc.Node = null
 
-    animationDurability = 0.5
-    longAnimationMultiplier = 0.8
+    game: Game
+
+    levelMap: LevelMap
+
+    // @property()
+
 
     // @property(cc.Node)
     // colorBlocksNode: cc.Node = null
@@ -29,10 +33,9 @@ export default class SimplelBlock extends cc.Component {
     row: number = 0
     state: SimpleBlockState = SimpleBlockState.NONE
 
-    scores: Scores = null
-    steps: Steps = null
+    // scores: Scores = null
+    // steps: Steps = null
 
-    game: Game
 
 
     // @property(cc.Label)
@@ -47,19 +50,12 @@ export default class SimplelBlock extends cc.Component {
 
 
 
-    spawn(game: Game, x: number, y: number): SimplelBlock {
-        this.game = game
+    spawn(levelMap: LevelMap, x: number, y: number): SimplelBlock {
+        this.levelMap = levelMap
+        this.game = this.gameNode.getComponent(Game)
 
-        const { scoresNode, stepsNode, blocksGap, mapNode, blockSize } = this.game
-
-        this.scores = scoresNode.getComponent(Scores)
-        this.steps = stepsNode.getComponent(Steps) 
-
-        // const blockId = Math.round(Math.random() * (blockList.length - 1))
-
-        // this.node = cc.instantiate(blockList[blockId].node)
-
-        // this.type = blockList[blockId].type
+        const { blocksGap, blockSize } = levelMap
+        const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
 
         this.state = SimpleBlockState.SPAWN
 
@@ -76,28 +72,19 @@ export default class SimplelBlock extends cc.Component {
 
         this.node.scale = 0
 
-        mapNode.addChild(this.node)
-
         cc.tween(this.node) // TODO: Animations.ts
-            .delay(this.animationDurability / this.game.animationSpeed)
-            .to(this.animationDurability * this.longAnimationMultiplier / this.game.animationSpeed, { scale: 1.1 })
-            .to(this.animationDurability * (1 - this.longAnimationMultiplier) / this.game.animationSpeed, { scale: 1 })
+            .delay(animationDurability / animationSpeed)
+            .to(animationDurability * longAnimationMultiplier / animationSpeed, { scale: 1.1 })
+            .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1 })
             .call(() => this.state = SimpleBlockState.IDLE)
             .start()
-
-        // this.map
 
         this.node.on(cc.Node.EventType.TOUCH_START, () => this.onTouch(true))
 
         return this
     }
 
-    start = () => {
-        // console.log('start block', this.game)
-
-        // this.node.x
-
-    }
+    start() { }
 
     onTouch(isTrigger = false): number {
         const { column, row } = this
@@ -117,17 +104,15 @@ export default class SimplelBlock extends cc.Component {
 
         if (isTrigger && chainLength) {
             this.remove()
-            // console.log({ chainLength: chainLength + 1, touched: this.state })
 
-            this.scores.add(chainLength)
-            this.steps.step()
+            this.game.levelController.fire(chainLength)
         }
 
         return chainLength
     }
 
     touchSame(x: number, y: number): number {
-        const block = this.game.map[x]?.[y]
+        const block = this.levelMap.mapData[x]?.[y]
 
         if (block?.type === this.type && block.state !== SimpleBlockState.TOUCHED) {
             return block.onTouch() + 1
@@ -137,38 +122,30 @@ export default class SimplelBlock extends cc.Component {
     }
 
     remove() {
+        const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
+
         cc.tween(this.node) // TODO: make animation clip
-            .to(this.animationDurability * (1 - this.longAnimationMultiplier) / this.game.animationSpeed, { scale: 1.1 })
-            .to(this.animationDurability * this.longAnimationMultiplier / this.game.animationSpeed, { scale: 0 })
+            .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1.1 })
+            .to(animationDurability * longAnimationMultiplier / animationSpeed, { scale: 0 })
             .call(() => {
-                this.game.mapNode.removeChild(this.node)
-                this.game.map[this.column][this.row] = null
+                this.levelMap.removeBlock(this)
             })
             .start()
     }
 
-    get downBlock() {
-        return this.game?.map[this.column][this.row - 1]
-    }
-
-    set downBlock(block: SimplelBlock) {
-        this.game.map[this.column][this.row - 1] = block
-    }
-
     get currentMapColumn() {
-        return this.game?.map[this.column]
+        return this.levelMap?.mapData[this.column]
     }
 
-
-    public setRow(size: number): void {
-        this.row = size
-    }
 
     fallDown() {
+        const { blocksGap, mapNode, blockSize } = this.levelMap
+        const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
+
         // console.log(this.game)
         const downBlock = this.currentMapColumn[this.row - 1]
 
-        if (this.game && !downBlock && this.row) {
+        if (this.currentMapColumn && !downBlock && this.row) {
             const emptyRow = this.currentMapColumn.findIndex((block) => !block)
 
             if (emptyRow > -1) {
@@ -184,43 +161,17 @@ export default class SimplelBlock extends cc.Component {
                 this.state = SimpleBlockState.FALL
 
                 cc.tween(this.node)
-                    .to(this.animationDurability / this.game.animationSpeed, { position: cc.v3(this.node.x, (this.node.height + this.game.blocksGap) * emptyRow) })
+                    .to(animationDurability / animationSpeed, { position: cc.v3(this.node.x, (this.node.height + blocksGap) * emptyRow) })
                     .call(() => this.state = SimpleBlockState.IDLE)
                     .start()
 
             }
-            // console.log(emptyIndex)
-
-            // console.log('fire have game')
         }
     }
 
     update = (dt) => {
-        // console.log(this)
-
         if (this.node.active) {
             this.fallDown()
         }
-
-        // this.fallDown()
-        // console.log(this.game && !this.downBlock)
-
-        // this.node.active = false
-
-        // if (this.game) {
-        //     console.log('fire')
-        // }
-
-        // if (this.game && !this.downBlock) {
-        //     // TODO: поиск ячейки для падения
-
-        //     const emptyRow = this.game.map.indexOf(null)
-
-        //     console.log(emptyRow)
-
-        //     this.game.map[this.column][this.row] = null
-
-        //     this.downBlock = this
-        // }
     }
 }

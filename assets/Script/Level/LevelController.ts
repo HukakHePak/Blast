@@ -58,7 +58,17 @@ export default class LevelController extends cc.Component {
     init(game: Game) {
         this.game = game
 
+
+
         // this.levelMap.init(game)
+    }
+
+    shake() {
+        this.mapShakes += 1
+
+        if(this.mapShakes > this.mapShakesLimit) {
+            this.defeat()
+        }
     }
 
     fire(count: number) {
@@ -101,7 +111,7 @@ export default class LevelController extends cc.Component {
         this.defeatNode.active = false
         this.steps = 0
         this.scores = 0
-        // this.mapShakes = 0
+        this.mapShakes = 0
     }
 
     updateLabels() {

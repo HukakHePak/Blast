@@ -31,7 +31,7 @@ export default class SimplelBlock extends cc.Component {
 
     // onLoad () {}
 
-    spawn(mapController: MapController, x: number, y: number): SimplelBlock {
+    spawn(mapController: MapController, x: number, y: number, callback?: () => void): SimplelBlock {
         this.mapController = mapController
         this.game = this.gameNode.getComponent(Game)
 
@@ -59,48 +59,56 @@ export default class SimplelBlock extends cc.Component {
             .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1 })
             .call(() => {
                 this.state = SimpleBlockState.IDLE
+                callback?.()
             })
             .start()
 
-        this.node.on(cc.Node.EventType.TOUCH_START, () => this.onTouch(true))
+        this.node.on(cc.Node.EventType.TOUCH_START, () => this.onTouch())
 
         return this
     }
 
     start() { }
 
-    onTouch(isTrigger = false): number {
-        const { column, row } = this
-
-
-        if (!isTrigger) {
-            this.state = SimpleBlockState.TOUCHED
-            this.remove()
+    onTouch() {
+        if (this.state !== SimpleBlockState.IDLE) {
+            return
         }
 
-        const chainLength = this.touchSame(column - 1, row)
-            + this.touchSame(column + 1, row)
-            + this.touchSame(column, row - 1)
-            + this.touchSame(column, row + 1)
+        const chain = this.fireTouch()
 
-        // неочевидная проверка: если хоть раз прокнет touchSame, значит есть одинаковые блоки
+        if (chain.length >= this.mapController.minimalChainLength) {
+            chain.forEach(block => block.remove())
+            this.game.levelController.fire(chain.length)
 
-        if (isTrigger && chainLength) {
-            this.remove()
-            this.game.levelController.fire(chainLength)
+            return
         }
 
-        return chainLength
+        chain.forEach(block => block.state = SimpleBlockState.IDLE)
     }
 
-    touchSame(x: number, y: number): number {
-        const block = this.mapController.mapData[x]?.[y]
+    fireTouch(): Array<SimplelBlock> {
+        const { column, row } = this
+
+        this.state = SimpleBlockState.TOUCHED
+
+        return [
+            this,
+            ...this.touchSame(column - 1, row),
+            ...this.touchSame(column + 1, row),
+            ...this.touchSame(column, row - 1),
+            ...this.touchSame(column, row + 1)
+        ]
+    }
+
+    touchSame(x: number, y: number): Array<SimplelBlock> {
+        const block = this.mapController.getBlock(x, y)
 
         if (block?.type === this.type && block.state !== SimpleBlockState.TOUCHED) {
-            return block.onTouch() + 1
+            return [...block.fireTouch()]
         }
 
-        return 0
+        return []
     }
 
     remove() {

@@ -26,7 +26,7 @@ export default class MapController extends cc.Component {
     blocksGap: number = 5
 
     @property(cc.Integer)
-    minimalChainLength = 1      // TODO: чтоб работало, нужно поменять алгоритм сжигания
+    minimalChainLength = 2      // TODO: чтоб работало, нужно поменять алгоритм сжигания
 
     @property(cc.Node)
     colorBlocksNode: cc.Node = null
@@ -49,7 +49,7 @@ export default class MapController extends cc.Component {
 
     // state: MapControllerState = MapControllerState.NONE
 
-
+    spawnCounter: number = 0
 
     // blockPool: cc.NodePool
 
@@ -61,7 +61,12 @@ export default class MapController extends cc.Component {
 
     start() { // TODO: spawn
         this.game = this.gameNode.getComponent(Game)
+        this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
 
+        this.init()
+    }
+
+    init() {
         const width = (this.mapWidth - 1) * (this.blockSize + this.blocksGap)
         const height = (this.mapHeight - 1) * (this.blockSize + this.blocksGap)
 
@@ -74,19 +79,14 @@ export default class MapController extends cc.Component {
         // this.node.x = -width / 2
         // this.node.y = -height / 2
 
-        this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
-
-        // this.levelController = this.levelControllerNode.getComponent(LevelController)
-
-        // this.levelController.init(this)
-
-        // this.shake()
 
         for (let x = 0; x < this.mapWidth; x++) {
             const column = []
 
             for (let y = 0; y < this.mapHeight; y++) {
                 column.push()
+
+                this.spawnCounter += 1
             }
 
             this.mapData.push(column)
@@ -99,22 +99,29 @@ export default class MapController extends cc.Component {
                 column[y].remove()
             })
         })
-
-        // this.state = MapControllerState.NONE
     }
 
-    get needShake() {
-        const need = !this.mapData.some((column, x) => {
+    get hasMoves() {
+        const hasmoves = this.mapData.some((column, x) => {
             return column.some((block, y) => {
-                console.log({ block, up: block?.type === column[y + 1]?.type, left: block?.type === this.mapData[x + 1]?.[y].type })
+                // console.log({ block, up: block?.type === column[y + 1]?.type, left: block?.type === this.mapData[x + 1]?.[y].type })
 
                 return block?.type === column[y + 1]?.type || block?.type === this.mapData[x + 1]?.[y].type
             })
         })
 
-        console.log({ need })
+        console.log({ hasmoves })
 
-        return need
+        return hasmoves
+    }
+
+    checkMapMoves() {
+        this.spawnCounter -= 1
+
+        if (!this.spawnCounter && !this.hasMoves) {
+            this.game.levelController.shake()
+            this.clear()
+        }
     }
 
     private createBlock(x: number, y: number): SimplelBlock {
@@ -128,7 +135,7 @@ export default class MapController extends cc.Component {
 
         const block = node.getComponent(SimplelBlock)
 
-        block.spawn(this, x, y)
+        block.spawn(this, x, y, () => this.checkMapMoves())
 
         return block
     }
@@ -136,31 +143,24 @@ export default class MapController extends cc.Component {
     removeBlock(block: SimplelBlock) {
         const { node, column, row } = block
 
+        this.spawnCounter += 1
+
         this.mapNode.removeChild(node)
         this.mapData[column][row] = null
     }
 
-    spawnNewBlocks() {
-        // let spawned = false
+    getBlock(x: number, y: number) {
+        return this.mapData[x]?.[y]
+    }
 
+    spawnNewBlocks() {
         this.mapData.forEach((column, x) => {
             const lastIndex = this.mapHeight - 1
 
             if (!column[lastIndex]) {
                 column[lastIndex] = this.createBlock(x, lastIndex)
-
-                // this.scheduleOnce(() => this.checkShakes(), this.game.animationDurability * 2)
-                // // spawned = true
             }
         })
-
-        // if (spawned) {
-        //     this.state = MapControllerState.SPAWN
-        // } else if (this.state === MapControllerState.SPAWN) {
-
-
-        //     this.state = this.needShake ? MapControllerState.NEED : MapControllerState.IDLE
-        // }
     }
 
     update(dt) {

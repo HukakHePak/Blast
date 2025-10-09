@@ -4865,7 +4865,7 @@
     "mapHeight": 3,
     "blockSize": 80,
     "blocksGap": 5,
-    "minimalChainLength": 1,
+    "minimalChainLength": 2,
     "colorBlocksNode": {
       "__id__": 38
     },

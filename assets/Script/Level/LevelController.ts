@@ -69,28 +69,19 @@ export default class LevelController extends cc.Component {
             this.victory()
 
             return
-        }
+        }        
 
-        // const mapNeedShake = !this.mapController.needShake
+        // this.scheduleOnce(() => {
+        //     if (!this.mapController.needShake) return
 
-        // if(this.mapController.needShake && this.mapShakes < this.mapShakesLimit) {
-        //     this.mapController.shake()
-        // }
+        //     if (this.mapShakes < this.mapShakesLimit) {
+        //         this.mapController.clear()
+        //         this.mapShakes += 1
+        //     } else {
+        //         this.defeat()
+        //     }
+        // }, this.game.animationDurability * 4)
 
-        
-
-        this.scheduleOnce(() => {
-            if (!this.mapController.needShake) return
-
-            if (this.mapShakes < this.mapShakesLimit) {
-                this.mapController.clear()
-                this.mapShakes += 1
-            } else {
-                this.defeat()
-            }
-        }, this.game.animationDurability * 4)
-
-        // cc.act
 
         if (this.steps >= this.stepsLimit) {
             this.defeat()

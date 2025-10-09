@@ -102,17 +102,17 @@ export default class MapController extends cc.Component {
     }
 
     get hasMoves() {
-        const hasmoves = this.mapData.some((column, x) => {
+        return this.mapData.some((column, x) => {
             return column.some((block, y) => {
-                // console.log({ block, up: block?.type === column[y + 1]?.type, left: block?.type === this.mapData[x + 1]?.[y].type })
-
                 return block?.type === column[y + 1]?.type || block?.type === this.mapData[x + 1]?.[y].type
             })
         })
+    }
 
-        console.log({ hasmoves })
+    useBooster(x: number, y: number) {
+        const booster = this.game.levelController.boostersController.active
 
-        return hasmoves
+        
     }
 
     checkMapMoves() {

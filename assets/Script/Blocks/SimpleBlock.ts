@@ -1,7 +1,17 @@
+import Booster from "../Boosters/Booster";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
 
 const { ccclass, property } = cc._decorator;
+
+export enum BlockTypes {
+    NONE = 0,
+    RED = 1,
+    GREEN = 2,
+    BLUE = 3,
+    PURPLE = 4,
+    YELLOW = 5,
+}
 
 export enum SimpleBlockState {
     NONE = 'none',
@@ -70,8 +80,18 @@ export default class SimplelBlock extends cc.Component {
 
     start() { }
 
+    get booster(): Booster {
+        return this.game.levelController.boostersController.active
+    }
+
     onTouch() {
         if (this.state !== SimpleBlockState.IDLE) {
+            return
+        }
+
+        if(this.booster) {
+            this.mapController.useBooster(this.column, this.row)
+
             return
         }
 

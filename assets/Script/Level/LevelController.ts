@@ -1,3 +1,4 @@
+import BoostersController from "../Boosters/BoostersController";
 import Game from "../Game/Game";
 import MapController, { MapControllerState } from "../Map/MapController";
 
@@ -39,6 +40,11 @@ export default class LevelController extends cc.Component {
     @property
     mapShakesLimit = 3
 
+    @property(cc.Node)
+    boostersNode: cc.Node = null
+
+    boostersController: BoostersController
+
 
     // levelMap: LevelMap
 
@@ -50,15 +56,18 @@ export default class LevelController extends cc.Component {
     // onLoad () {}
 
     start() {
-        this.mapController = this.mapNode.getComponent(MapController)
+        
         this.victoryNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
         this.defeatNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
     }
-
+    
     init(game: Game) {
+        this.mapController = this.mapNode.getComponent(MapController)
+        this.boostersController = this.boostersNode.getComponent(BoostersController)
+        
         this.game = game
-
-
+        
+        this.boostersController.init(game)
 
         // this.levelMap.init(game)
     }
@@ -66,7 +75,7 @@ export default class LevelController extends cc.Component {
     shake() {
         this.mapShakes += 1
 
-        if(this.mapShakes > this.mapShakesLimit) {
+        if (this.mapShakes > this.mapShakesLimit) {
             this.defeat()
         }
     }
@@ -79,7 +88,7 @@ export default class LevelController extends cc.Component {
             this.victory()
 
             return
-        }        
+        }
 
         // this.scheduleOnce(() => {
         //     if (!this.mapController.needShake) return

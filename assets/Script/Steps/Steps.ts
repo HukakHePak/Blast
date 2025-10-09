@@ -1,28 +1,34 @@
-// Learn TypeScript:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
-
-const {ccclass, property} = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
-
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
+export default class Steps extends cc.Component {
+    @property(cc.Integer)
+    steps: number = 10
 
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
-    start () {
-
+    start() {
+        this.updateLabel()
     }
 
-    // update (dt) {}
+    setInitialSteps(count: number) {
+        this.steps = count
+    }
+
+    step() {
+        this.steps = Math.max(this.steps - 1, 0)
+
+        this.updateLabel()
+    }
+
+    updateLabel() {
+        const label = this.node.getComponent(cc.Label)
+
+        label.string = `${this.steps}`
+    }
+
+    update(dt) {
+    }
 }

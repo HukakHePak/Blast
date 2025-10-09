@@ -34,6 +34,9 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     scoresNode: cc.Node = null
 
+    @property(cc.Node)
+    stepsNode: cc.Node = null
+
     map: Array<Array<SimplelBlock>> = [];
 
     blockList: Array<SimplelBlock> = []

@@ -1,14 +1,8 @@
 import Game from "../Game/Game";
 import Scores from "../Scores/Scores";
+import Steps from "../Steps/Steps";
 
 const { ccclass, property } = cc._decorator;
-
-// export const BOX_TYPE = cc.Enum({
-//     BLUE: 0,
-//     RED: 1
-// })
-
-
 
 export enum SimpleBlockState {
     NONE = 'none',
@@ -20,9 +14,6 @@ export enum SimpleBlockState {
 
 @ccclass
 export default class SimplelBlock extends cc.Component {
-    // color: string = 'blue'
-
-
     @property
     type: string = ''
 
@@ -30,7 +21,6 @@ export default class SimplelBlock extends cc.Component {
 
     animationDurability = 0.5
     longAnimationMultiplier = 0.8
-
 
     // @property(cc.Node)
     // colorBlocksNode: cc.Node = null
@@ -40,6 +30,7 @@ export default class SimplelBlock extends cc.Component {
     state: SimpleBlockState = SimpleBlockState.NONE
 
     scores: Scores = null
+    steps: Steps = null
 
     game: Game
 
@@ -59,9 +50,10 @@ export default class SimplelBlock extends cc.Component {
     spawn(game: Game, x: number, y: number): SimplelBlock {
         this.game = game
 
-        const { scoresNode, blocksGap, mapNode, blockSize } = this.game
+        const { scoresNode, stepsNode, blocksGap, mapNode, blockSize } = this.game
 
         this.scores = scoresNode.getComponent(Scores)
+        this.steps = stepsNode.getComponent(Steps) 
 
         // const blockId = Math.round(Math.random() * (blockList.length - 1))
 
@@ -128,6 +120,7 @@ export default class SimplelBlock extends cc.Component {
             // console.log({ chainLength: chainLength + 1, touched: this.state })
 
             this.scores.add(chainLength)
+            this.steps.step()
         }
 
         return chainLength

@@ -109,12 +109,6 @@ export default class MapController extends cc.Component {
         })
     }
 
-    useBooster(x: number, y: number) {
-        const booster = this.game.levelController.boostersController.active
-
-        
-    }
-
     checkMapMoves() {
         this.spawnCounter -= 1
 
@@ -138,6 +132,26 @@ export default class MapController extends cc.Component {
         block.spawn(this, x, y, () => this.checkMapMoves())
 
         return block
+    }
+
+    replaceBlock(x: number, y: number, block: SimplelBlock) {
+        if(this.mapData[x]?.[y]){
+            this.mapData[x][y] = block
+
+            block.column = x
+            block.row = y
+
+            block.move()
+        }
+    }
+
+    swapBlocks(target: SimplelBlock, source: SimplelBlock) {
+        console.log({target, source})
+
+        const { column, row } = source
+
+        this.replaceBlock(target.column, target.row, source)
+        this.replaceBlock(column, row, target)
     }
 
     removeBlock(block: SimplelBlock) {

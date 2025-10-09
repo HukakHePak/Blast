@@ -89,8 +89,8 @@ export default class SimplelBlock extends cc.Component {
             return
         }
 
-        if(this.booster) {
-            this.mapController.useBooster(this.column, this.row)
+        if (this.booster) {
+            this.booster.use(this)
 
             return
         }
@@ -145,6 +145,16 @@ export default class SimplelBlock extends cc.Component {
 
     get currentMapColumn() {
         return this.mapController?.mapData[this.column]
+    }
+
+    move() {
+        const { blocksGap, blockSize } = this.mapController
+        const { animationDurability, animationSpeed } = this.game
+
+        cc.tween(this.node)
+            .to(animationDurability / animationSpeed, { position: cc.v3((blockSize + blocksGap) * this.column, (blockSize + blocksGap) * this.row) })
+            .call(() => this.state = SimpleBlockState.IDLE)
+            .start()
     }
 
 

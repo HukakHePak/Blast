@@ -21,6 +21,7 @@ export default class BoostersController extends cc.Component {
     
 
     deactivate() {
+        this.active.deactivate()
         this.active = null
     }
 
@@ -40,6 +41,7 @@ export default class BoostersController extends cc.Component {
     }
 
     activate(booster: Booster) {
+        this.active?.deactivate()
         this.active = booster
     }
 

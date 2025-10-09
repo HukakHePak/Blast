@@ -1,3 +1,4 @@
+import SimplelBlock from "../Blocks/SimpleBlock";
 import BoostersController from "./BoostersController";
 
 const { ccclass, property } = cc._decorator;
@@ -28,6 +29,8 @@ export default class Booster extends cc.Component {
 
     boostersController: BoostersController
 
+    pickedBlock: SimplelBlock = null
+
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -55,26 +58,42 @@ export default class Booster extends cc.Component {
             .start()
     }
 
-    use() {
-        this.count -= 1
+    // deactivate
+
+    use(block: SimplelBlock) {
+
+        const { mapController } = this.boostersController.game.levelController
 
         switch (this.type) {
             case BoosterType.BOMB:
+
+
                 break;
 
             case BoosterType.TELEPORT:
+                if (this.pickedBlock) {
+                    mapController.swapBlocks(this.pickedBlock, block)
+                } else {
+                    this.pickedBlock = block
+                    return;
+                }
                 break;
 
             default: break;
         }
 
         this.boostersController.deactivate()
+        this.count -= 1
+    }
 
+    deactivate() {
         const { game } = this.boostersController
-        
+
         cc.tween(this.node)
             .to((1 - game.longAnimationMultiplier) * game.animationDurability, { scale: 1 })
             .start()
+
+        this.pickedBlock = null
     }
 
     update(dt) {

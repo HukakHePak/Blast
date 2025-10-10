@@ -1,4 +1,4 @@
-import SimplelBlock from "../Blocks/SimpleBlock";
+import SimplelBlock, { BlockTypes } from "../Blocks/SimpleBlock";
 import BoostersController from "./BoostersController";
 
 const { ccclass, property } = cc._decorator;
@@ -66,7 +66,10 @@ export default class Booster extends cc.Component {
 
         switch (this.type) {
             case BoosterType.BOMB:
+                mapController.removeBlock(block)       
+                mapController.createBlock(block.column, block.row, BlockTypes.BOMB)
 
+                //TODO: click timer
 
                 break;
 

@@ -132,15 +132,13 @@ export default class MapController extends cc.Component {
     createBomb(x: number, y: number) {
         const bombTypes = [BlockTypes.BOMB, BlockTypes.BOMB_M, BlockTypes.RACKETS, BlockTypes.RACKETS_H]
 
-        const typeId =  Math.round(Math.random() * (bombTypes.length - 1))
+        const typeId = Math.round(Math.random() * (bombTypes.length - 1))
 
         this.createBlock(x, y, bombTypes[typeId])
     }
 
     createBlock(x: number, y: number, type?: BlockTypes) {
         const node = cc.instantiate(this.getBlockByType(type).node)
-
-        console.log('spawn', type)
 
         this.mapNode.addChild(node)
 
@@ -152,10 +150,10 @@ export default class MapController extends cc.Component {
     }
 
     getBlockByType(type?: BlockTypes) {
-        if(type) {
+        if (type) {
             return this.bombsList.find(bomb => bomb.type === type) || this.blockList.find(bomb => bomb.type === type)
         }
-        
+
         const blockId = Math.round(Math.random() * (this.blockList.length - 1))
 
         return this.blockList[blockId]
@@ -177,6 +175,10 @@ export default class MapController extends cc.Component {
 
         this.replaceBlock(target.column, target.row, source)
         this.replaceBlock(column, row, target)
+    }
+
+    removeBlocks(blocks: SimplelBlock[]) {
+
     }
 
     removeBlock(block: SimplelBlock) {

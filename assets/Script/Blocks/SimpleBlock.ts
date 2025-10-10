@@ -102,23 +102,22 @@ export default class SimplelBlock extends cc.Component {
         const chain = this.fireTouch()
 
         if (chain.length >= this.mapController.minimalChainLength) {
-            
-            chain.forEach(block => block.remove())
-            console.log('remove')
-            
-            if(chain.length >= this.mapController.bombSpawnChainLength) {
-                // this.remove()
-                console.log('spawn bomb')
+            if (chain.length >= this.mapController.bombSpawnChainLength) {
+
+                const [current, ...others] = chain
+
+                others.forEach(block => block.remove())
+                
+                this.mapController.removeBlock(this)       
                 this.mapController.createBomb(this.column, this.row)
 
+                this.game.levelController.fire(chain.length)
 
-
-
-                // this.mapController.
+                return
             }
-            // this.remove()
 
-            
+            chain.forEach(block => block.remove())
+
             this.game.levelController.fire(chain.length)
 
             return
@@ -154,13 +153,15 @@ export default class SimplelBlock extends cc.Component {
     remove() {
         const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
 
-        cc.tween(this.node) // TODO: make animation clip
+        return cc.tween(this.node) // TODO: make animation clip
             .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1.1 })
             .to(animationDurability * longAnimationMultiplier / animationSpeed, { scale: 0 })
             .call(() => {
                 this.mapController.removeBlock(this)
             })
             .start()
+
+
     }
 
     get currentMapColumn() {
@@ -206,7 +207,6 @@ export default class SimplelBlock extends cc.Component {
 
     update = (dt) => {
         if (this.node.active) {
-            console.log('fall')
             this.fallDown()
         }
     }

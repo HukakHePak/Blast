@@ -121,13 +121,6 @@ export default class SimplelBlock extends cc.Component {
 
             if (chain.length >= this.mapController.bombSpawnChainLength) {
 
-                // const [current, ...others] = chain
-
-                // others.forEach(block => block.remove())
-                // this.mapController.removeBlocks(others)
-
-                // this.mapController.removeBlock(this)
-
                 const bombType = chain.length >= this.mapController.maxBombSpawnChainLength
                     ? BlockTypes.BOMB_M
                     : selectAny([

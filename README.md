@@ -1,2 +1,2 @@
 # deploy 
-`git subtree --prefix docs/web-mobile origin deploy`
+`git subtree push --prefix docs/web-mobile origin deploy`

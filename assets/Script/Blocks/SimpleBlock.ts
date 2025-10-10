@@ -76,7 +76,7 @@ export default class SimplelBlock extends cc.Component {
 
         this.node.scale = 0
 
-        cc.tween(this.node) // TODO: Animations.ts
+        cc.tween(this.node)
             .delay(animationDurability)
             .to(animationDurability * longAnimationMultiplier, { scale: 1.1 })
             .to(animationDurability * (1 - longAnimationMultiplier), { scale: 1 })
@@ -140,8 +140,6 @@ export default class SimplelBlock extends cc.Component {
                 return
             }
 
-            // chain.forEach(block => block.remove())
-
             this.game.levelController.fire(chain.length)
 
             return
@@ -177,19 +175,13 @@ export default class SimplelBlock extends cc.Component {
     remove() {
         const { animationDurability, longAnimationMultiplier } = this.game
 
-        return cc.tween(this.node) // TODO: make animation clip
+        return cc.tween(this.node)
             .to(animationDurability * (1 - longAnimationMultiplier), { scale: 1.1 })
             .to(animationDurability * longAnimationMultiplier, { scale: 0 })
             .call(() => {
                 this.mapController.mapNode.removeChild(this.node)
             })
             .start()
-
-
-    }
-
-    get currentMapColumn() {
-        return this.mapController?.mapData[this.column]
     }
 
     move() {
@@ -203,32 +195,5 @@ export default class SimplelBlock extends cc.Component {
     }
 
 
-    // fallDown() {
-    //     const { blocksGap } = this.mapController
-    //     const { animationDurability } = this.game
-
-    //     const downBlock = this.currentMapColumn[this.row - 1]
-
-    //     if (this.currentMapColumn && !downBlock && this.row) {
-    //         const emptyRow = this.currentMapColumn.findIndex((block) => !block)
-
-    //         if (emptyRow > -1) {
-    //             this.currentMapColumn[emptyRow] = this
-
-    //             this.currentMapColumn[this.row] = null
-
-    //             this.row = emptyRow
-
-    //             this.state = SimpleBlockState.FALL
-
-    //             this.move()
-    //         }
-    //     }
-    // }
-
-    update = (dt) => {
-        // if (this.node.active) {
-        //     this.fallDown()
-        // }
-    }
+    // update = (dt) => { }
 }

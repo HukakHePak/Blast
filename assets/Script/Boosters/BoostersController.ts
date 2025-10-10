@@ -13,10 +13,6 @@ export default class BoostersController extends cc.Component {
 
     game: Game = null;
 
-
-
-    // boosters:
-
     active: Booster = null
     
 
@@ -24,7 +20,6 @@ export default class BoostersController extends cc.Component {
         this.active.deactivate()
         this.active = null
     }
-
 
     // LIFE-CYCLE CALLBACKS:
 

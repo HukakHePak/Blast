@@ -1,6 +1,6 @@
 import BoostersController from "../Boosters/BoostersController";
 import Game from "../Game/Game";
-import MapController, { MapControllerState } from "../Map/MapController";
+import MapController from "../Map/MapController";
 
 const { ccclass, property } = cc._decorator;
 
@@ -45,9 +45,6 @@ export default class LevelController extends cc.Component {
 
     boostersController: BoostersController
 
-
-    // levelMap: LevelMap
-
     game: Game = null
 
 
@@ -67,8 +64,6 @@ export default class LevelController extends cc.Component {
         this.game = game
         
         this.boostersController.init(game)
-
-        // this.levelMap.init(game)
     }
 
     shake() {
@@ -121,6 +116,5 @@ export default class LevelController extends cc.Component {
 
     update(dt) {
         this.updateLabels()
-        // this.checkShakes()
     }
 }

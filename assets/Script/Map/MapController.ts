@@ -1,16 +1,8 @@
-import SimplelBlock, { BlockTypes, BombTypes } from "../Blocks/SimpleBlock";
+import SimplelBlock, { BlockTypes } from "../Blocks/SimpleBlock";
 import Game from "../Game/Game";
-import LevelController from "../Level/LevelController";
 import { selectAny } from "../Utils/utils";
 
 const { ccclass, property } = cc._decorator;
-
-export enum MapControllerState {
-    NONE = 'none',
-    IDLE = 'idle',
-    SPAWN = 'spawn',
-    NEED = 'need_shake'
-}
 
 @ccclass
 export default class MapController extends cc.Component {
@@ -54,21 +46,15 @@ export default class MapController extends cc.Component {
     @property(cc.Node)
     gameNode: cc.Node = null
 
-
     game: Game = null
 
-
-    mapData: Array<Array<SimplelBlock>> = []; // TODO: а зачем, собсна, массив? Сделать Map
+    mapData: Array<Array<SimplelBlock>> = [];
 
     blockList: Array<SimplelBlock> = []
 
     bombsList: Array<SimplelBlock> = []
 
-    // state: MapControllerState = MapControllerState.NONE
-
     spawnCounter: number = 0
-
-    // blockPool: cc.NodePool
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -76,7 +62,7 @@ export default class MapController extends cc.Component {
 
 
 
-    start() { // TODO: spawn
+    start() {
         this.game = this.gameNode.getComponent(Game)
         this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
         this.bombsList = this.bombsBlocksNode.getComponentsInChildren(SimplelBlock)
@@ -215,7 +201,5 @@ export default class MapController extends cc.Component {
         return this.mapData[x]?.[y]
     }
 
-    update(dt) {
-
-    }
+    // update(dt) { }
 }

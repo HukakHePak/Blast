@@ -9,17 +9,10 @@ export enum BoosterType {
     TELEPORT = 2,
 }
 
-// cc.Enum(BoosterType)
-
-// export const BoosterType = cc.Enum({
-//     BOMB: 0,
-// })
-
 @ccclass
 export default class Booster extends cc.Component {
     @property({ type: cc.Enum(BoosterType) })
     type: BoosterType = BoosterType.NONE;
-    // type = null;
 
     @property(cc.Integer)
     count: number = 0;
@@ -58,18 +51,16 @@ export default class Booster extends cc.Component {
             .start()
     }
 
-    // deactivate
-
     use(block: SimplelBlock) {
 
         const { mapController } = this.boostersController.game.levelController
 
         switch (this.type) {
             case BoosterType.BOMB:
-                mapController.removeBlock(block)       
-                mapController.createBlock(block.column, block.row, BlockTypes.BOMB)
+                mapController.removeBlock(block)
+                this.boostersController.game.levelController.fire(1)
 
-                //TODO: click timer
+                mapController.createBlock(block.column, block.row, BlockTypes.BOMB)
 
                 break;
 

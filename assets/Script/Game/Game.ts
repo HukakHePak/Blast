@@ -15,16 +15,13 @@ export default class Game extends cc.Component {
 
     levelController: LevelController = null
 
-
-    // blockPool: cc.NodePool
-
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
 
 
-    start() { // TODO: spawn
+    start() {
         this.levelController = this.levelControllerNode.getComponent(LevelController)
 
         this.levelController.init(this)

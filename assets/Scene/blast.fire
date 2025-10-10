@@ -312,7 +312,6 @@
       "__id__": 5
     },
     "_enabled": true,
-    "animationSpeed": 1,
     "animationDurability": 0.5,
     "longAnimationMultiplier": 0.8,
     "levelControllerNode": {
@@ -4977,6 +4976,8 @@
     "blocksGap": 5,
     "minimalChainLength": 2,
     "bombSpawnChainLength": 5,
+    "maxBombSpawnChainLength": 10,
+    "bombRadius": 1,
     "colorBlocksNode": {
       "__id__": 38
     },

@@ -1,6 +1,7 @@
-import SimplelBlock, { BlockTypes } from "../Blocks/SimpleBlock";
+import SimplelBlock, { BlockTypes, BombTypes } from "../Blocks/SimpleBlock";
 import Game from "../Game/Game";
 import LevelController from "../Level/LevelController";
+import { selectAny } from "../Utils/utils";
 
 const { ccclass, property } = cc._decorator;
 
@@ -30,6 +31,12 @@ export default class MapController extends cc.Component {
 
     @property(cc.Integer)
     bombSpawnChainLength = 5
+
+    @property(cc.Integer)
+    maxBombSpawnChainLength = 10
+
+    @property(cc.Integer)
+    bombRadius = 3
 
     @property(cc.Node)
     colorBlocksNode: cc.Node = null
@@ -129,14 +136,6 @@ export default class MapController extends cc.Component {
         }
     }
 
-    createBomb(x: number, y: number) {
-        const bombTypes = [BlockTypes.BOMB, BlockTypes.BOMB_M, BlockTypes.RACKETS, BlockTypes.RACKETS_H]
-
-        const typeId = Math.round(Math.random() * (bombTypes.length - 1))
-
-        this.createBlock(x, y, bombTypes[typeId])
-    }
-
     createBlock(x: number, y: number, type?: BlockTypes) {
         const node = cc.instantiate(this.getBlockByType(type).node)
 
@@ -154,9 +153,7 @@ export default class MapController extends cc.Component {
             return this.bombsList.find(bomb => bomb.type === type) || this.blockList.find(bomb => bomb.type === type)
         }
 
-        const blockId = Math.round(Math.random() * (this.blockList.length - 1))
-
-        return this.blockList[blockId]
+        return selectAny(this.blockList)
     }
 
     replaceBlock(x: number, y: number, block: SimplelBlock) {

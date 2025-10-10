@@ -1,6 +1,8 @@
 import Booster from "../Boosters/Booster";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
+import { selectAny } from "../Utils/utils";
+import BombBlock from "./BombBlock";
 
 const { ccclass, property } = cc._decorator;
 
@@ -16,6 +18,13 @@ export enum BlockTypes {
     RACKETS = 8,
     RACKETS_H = 9
 }
+
+export const BombTypes = [
+    BlockTypes.BOMB,
+    BlockTypes.BOMB_M,
+    BlockTypes.RACKETS,
+    BlockTypes.RACKETS_H
+]
 
 export enum SimpleBlockState {
     NONE = 'none',
@@ -50,7 +59,7 @@ export default class SimplelBlock extends cc.Component {
         this.game = this.gameNode.getComponent(Game)
 
         const { blocksGap, blockSize } = mapController
-        const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
+        const { animationDurability, longAnimationMultiplier } = this.game
 
         this.state = SimpleBlockState.SPAWN
 
@@ -68,9 +77,9 @@ export default class SimplelBlock extends cc.Component {
         this.node.scale = 0
 
         cc.tween(this.node) // TODO: Animations.ts
-            .delay(animationDurability / animationSpeed)
-            .to(animationDurability * longAnimationMultiplier / animationSpeed, { scale: 1.1 })
-            .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1 })
+            .delay(animationDurability)
+            .to(animationDurability * longAnimationMultiplier, { scale: 1.1 })
+            .to(animationDurability * (1 - longAnimationMultiplier), { scale: 1 })
             .call(() => {
                 this.state = SimpleBlockState.IDLE
                 callback?.()
@@ -93,6 +102,12 @@ export default class SimplelBlock extends cc.Component {
             return
         }
 
+        if (BombTypes.includes(this.type)) {
+            this.getComponent(BombBlock).onTouch()
+
+            return
+        }
+
         if (this.booster) {
             this.booster.use(this)
 
@@ -107,9 +122,19 @@ export default class SimplelBlock extends cc.Component {
                 const [current, ...others] = chain
 
                 others.forEach(block => block.remove())
-                
-                this.mapController.removeBlock(this)       
-                this.mapController.createBomb(this.column, this.row)
+
+                this.mapController.removeBlock(this)
+
+                const bombType = chain.length >= this.mapController.maxBombSpawnChainLength ? BlockTypes.BOMB_M : selectAny([
+                        BlockTypes.BOMB,
+                        BlockTypes.RACKETS,
+                        BlockTypes.RACKETS_H])
+
+                this.mapController.createBlock(
+                    this.column,
+                    this.row,
+                    bombType
+                )
 
                 this.game.levelController.fire(chain.length)
 
@@ -151,11 +176,11 @@ export default class SimplelBlock extends cc.Component {
     }
 
     remove() {
-        const { animationDurability, animationSpeed, longAnimationMultiplier } = this.game
+        const { animationDurability, longAnimationMultiplier } = this.game
 
         return cc.tween(this.node) // TODO: make animation clip
-            .to(animationDurability * (1 - longAnimationMultiplier) / animationSpeed, { scale: 1.1 })
-            .to(animationDurability * longAnimationMultiplier / animationSpeed, { scale: 0 })
+            .to(animationDurability * (1 - longAnimationMultiplier), { scale: 1.1 })
+            .to(animationDurability * longAnimationMultiplier, { scale: 0 })
             .call(() => {
                 this.mapController.removeBlock(this)
             })
@@ -170,10 +195,10 @@ export default class SimplelBlock extends cc.Component {
 
     move() {
         const { blocksGap, blockSize } = this.mapController
-        const { animationDurability, animationSpeed } = this.game
+        const { animationDurability } = this.game
 
         cc.tween(this.node)
-            .to(animationDurability / animationSpeed, { position: cc.v3((blockSize + blocksGap) * this.column, (blockSize + blocksGap) * this.row) })
+            .to(animationDurability, { position: cc.v3((blockSize + blocksGap) * this.column, (blockSize + blocksGap) * this.row) })
             .call(() => this.state = SimpleBlockState.IDLE)
             .start()
     }
@@ -181,7 +206,7 @@ export default class SimplelBlock extends cc.Component {
 
     fallDown() {
         const { blocksGap } = this.mapController
-        const { animationDurability, animationSpeed } = this.game
+        const { animationDurability } = this.game
 
         const downBlock = this.currentMapColumn[this.row - 1]
 
@@ -198,7 +223,7 @@ export default class SimplelBlock extends cc.Component {
                 this.state = SimpleBlockState.FALL
 
                 cc.tween(this.node)
-                    .to(animationDurability / animationSpeed, { position: cc.v3(this.node.x, (this.node.height + blocksGap) * emptyRow) })
+                    .to(animationDurability, { position: cc.v3(this.node.x, (this.node.height + blocksGap) * emptyRow) })
                     .call(() => this.state = SimpleBlockState.IDLE)
                     .start()
             }

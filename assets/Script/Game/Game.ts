@@ -4,9 +4,6 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Game extends cc.Component {
-    @property(cc.Integer)       // зачем?  
-    animationSpeed = 1
-
     @property(cc.Integer)
     animationDurability = 0.5
     

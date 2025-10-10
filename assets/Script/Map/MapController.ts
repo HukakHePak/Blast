@@ -94,46 +94,25 @@ export default class MapController extends cc.Component {
         this.mapBackgroundNode.width = width + (this.blockSize + this.blocksGap) * 2
         this.mapBackgroundNode.height = height + (this.blockSize + this.blocksGap) * 2
 
-        // this.node.x = -width / 2
-        // this.node.y = -height / 2
+        this.mapData = Array.from({ length: this.mapWidth }).map(() => Array.from({ length: this.mapHeight }))
 
-
-        for (let x = 0; x < this.mapWidth; x++) {
-            const column = []
-
-            for (let y = 0; y < this.mapHeight; y++) {
-                column.push()
-
-                this.spawnCounter += 1
-            }
-
-            this.mapData.push(column)
-        }
+        this.fillMap()
     }
 
-    clear() {
-        this.mapData.forEach(column => {
-            column.forEach((block, y) => {
-                column[y].remove()
+    fillMap() {
+        this.mapData.forEach((c, x) => {
+            c.forEach((block, y) => {
+                if (block) return
+
+                this.createBlock(x, y)
             })
         })
-    }
 
-    get hasMoves() {
-        return this.mapData.some((column, x) => {
-            return column.some((block, y) => {
-                return block?.type === column[y + 1]?.type || block?.type === this.mapData[x + 1]?.[y].type
-            })
-        })
-    }
+        if (this.hasMoves) return
 
-    checkMapMoves() {
-        this.spawnCounter -= 1
 
-        if (!this.spawnCounter && !this.hasMoves) {
-            this.game.levelController.shake()
-            this.clear()
-        }
+        this.clear()
+        this.game.levelController.shake()
     }
 
     createBlock(x: number, y: number, type?: BlockTypes) {
@@ -143,9 +122,27 @@ export default class MapController extends cc.Component {
 
         const block = node.getComponent(SimplelBlock)
 
-        block.spawn(this, x, y, () => this.checkMapMoves())
+        block.spawn(this, x, y)
 
         this.mapData[x][y] = block
+    }
+
+    clear() {
+        this.mapData.forEach(column => {
+            column.forEach((block, y) => {
+                this.removeBlock(block)
+            })
+        })
+
+        this.fillMap()
+    }
+
+    get hasMoves() {
+        return this.mapData.some((column, x) => {
+            return column.some((block, y) => {
+                return block?.type >= BlockTypes.BOMB || block?.type === column[y + 1]?.type || block?.type === this.mapData[x + 1]?.[y].type
+            })
+        })
     }
 
     getBlockByType(type?: BlockTypes) {
@@ -156,9 +153,13 @@ export default class MapController extends cc.Component {
         return selectAny(this.blockList)
     }
 
-    replaceBlock(x: number, y: number, block: SimplelBlock) {
+    replaceBlock(x: number, y: number, block: SimplelBlock | null) {
         if (this.mapData[x]?.[y]) {
             this.mapData[x][y] = block
+
+            if (!block) {
+                return
+            }
 
             block.column = x
             block.row = y
@@ -175,15 +176,38 @@ export default class MapController extends cc.Component {
     }
 
     removeBlocks(blocks: SimplelBlock[]) {
+        blocks.forEach(block => this.removeBlock(block))
 
+        this.scheduleOnce(() => {
+            this.fallMap()
+        }, this.game.animationDurability)
+    }
+
+    fallMap() {
+        this.mapData = this.mapData.map((column, x) => {
+            const fallen = Array.from({ length: this.mapHeight }) as SimplelBlock[]
+
+            column.filter(block => block).forEach((block, y) => {
+                block.column = x
+                block.row = y
+
+                block.move()
+
+                fallen[y] = block
+            })
+
+            return fallen
+        })
+
+        this.fillMap()
     }
 
     removeBlock(block: SimplelBlock) {
-        const { node, column, row } = block
+        if (!block) return
 
-        this.spawnCounter += 1
+        const { column, row } = block
+        block.remove()
 
-        this.mapNode.removeChild(node)
         this.mapData[column][row] = null
     }
 
@@ -191,17 +215,7 @@ export default class MapController extends cc.Component {
         return this.mapData[x]?.[y]
     }
 
-    spawnNewBlocks() {
-        this.mapData.forEach((column, x) => {
-            const lastIndex = this.mapHeight - 1
-
-            if (!column[lastIndex]) {
-                this.createBlock(x, lastIndex)
-            }
-        })
-    }
-
     update(dt) {
-        this.spawnNewBlocks()
+
     }
 }

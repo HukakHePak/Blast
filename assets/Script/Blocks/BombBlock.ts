@@ -32,16 +32,17 @@ export default class BombBlock extends cc.Component {
         // this.node.on(cc.Node.EventType.TOUCH_START, () => this.onTouch())
     }
 
-    handleBlock(block: SimplelBlock): number {
+    handleBlock(block: SimplelBlock): SimplelBlock {
         // if (BombTypes.includes(block.type) && block !== this.parent) {
         if (BombTypes.includes(block.type)) {
             // block.onTouch()
 
-            return 0
+            return null
         }
 
-        block.remove()
-        return 1
+        // this.parent.mapController.removeBlock(block)
+
+        return block
     }
 
     onTouch() {
@@ -49,38 +50,36 @@ export default class BombBlock extends cc.Component {
 
         const { bombRadius, mapHeight, mapWidth } = mapController
 
-        let fireCount = 0;
+        const fireBlocks = [];
 
         switch (type) {
             case BlockTypes.BOMB:   //TODO: radius searching
                 for (let x = column - bombRadius; x <= column + bombRadius; x++) {
                     for (let y = row - bombRadius; y <= row + bombRadius; y++) {
-                        fireCount += this.handleBlock(mapController.getBlock(x, y))
+                        fireBlocks.push(this.handleBlock(mapController.getBlock(x, y)))
                     }
                 }
-                this.parent.remove()
-
                 break;
+
             case BlockTypes.BOMB_M:
                 mapController.clear()
-                fireCount = mapHeight * mapWidth - 1
+                game.levelController.fire(mapHeight * mapWidth - 1)
+                return;
 
-                break;
             case BlockTypes.RACKETS:
-                mapController.mapData[column].forEach(block => fireCount += this.handleBlock(block))
+                mapController.mapData[column].forEach(block => fireBlocks.push(this.handleBlock(block)))
+                break;
 
-                this.parent.remove()
-                break;
             case BlockTypes.RACKETS_H:
-                mapController.mapData.forEach(column => fireCount += this.handleBlock(column[row]))
-                this.parent.remove()
+                mapController.mapData.forEach(column => fireBlocks.push(this.handleBlock(column[row])))
                 break;
+
             default: break;
         }
 
-        console.log(fireCount)
+        mapController.removeBlocks([this.parent, ...fireBlocks])
 
-        game.levelController.fire(fireCount)
+        game.levelController.fire(fireBlocks.filter(block => block).length)
 
     }
 

@@ -117,18 +117,24 @@ export default class SimplelBlock extends cc.Component {
         const chain = this.fireTouch()
 
         if (chain.length >= this.mapController.minimalChainLength) {
+            this.mapController.removeBlocks(chain)
+
             if (chain.length >= this.mapController.bombSpawnChainLength) {
 
-                const [current, ...others] = chain
+                // const [current, ...others] = chain
 
-                others.forEach(block => block.remove())
+                // others.forEach(block => block.remove())
+                // this.mapController.removeBlocks(others)
 
-                this.mapController.removeBlock(this)
+                // this.mapController.removeBlock(this)
 
-                const bombType = chain.length >= this.mapController.maxBombSpawnChainLength ? BlockTypes.BOMB_M : selectAny([
+                const bombType = chain.length >= this.mapController.maxBombSpawnChainLength
+                    ? BlockTypes.BOMB_M
+                    : selectAny([
                         BlockTypes.BOMB,
                         BlockTypes.RACKETS,
-                        BlockTypes.RACKETS_H])
+                        BlockTypes.RACKETS_H
+                    ])
 
                 this.mapController.createBlock(
                     this.column,
@@ -141,7 +147,7 @@ export default class SimplelBlock extends cc.Component {
                 return
             }
 
-            chain.forEach(block => block.remove())
+            // chain.forEach(block => block.remove())
 
             this.game.levelController.fire(chain.length)
 
@@ -182,7 +188,7 @@ export default class SimplelBlock extends cc.Component {
             .to(animationDurability * (1 - longAnimationMultiplier), { scale: 1.1 })
             .to(animationDurability * longAnimationMultiplier, { scale: 0 })
             .call(() => {
-                this.mapController.removeBlock(this)
+                this.mapController.mapNode.removeChild(this.node)
             })
             .start()
 
@@ -204,35 +210,32 @@ export default class SimplelBlock extends cc.Component {
     }
 
 
-    fallDown() {
-        const { blocksGap } = this.mapController
-        const { animationDurability } = this.game
+    // fallDown() {
+    //     const { blocksGap } = this.mapController
+    //     const { animationDurability } = this.game
 
-        const downBlock = this.currentMapColumn[this.row - 1]
+    //     const downBlock = this.currentMapColumn[this.row - 1]
 
-        if (this.currentMapColumn && !downBlock && this.row) {
-            const emptyRow = this.currentMapColumn.findIndex((block) => !block)
+    //     if (this.currentMapColumn && !downBlock && this.row) {
+    //         const emptyRow = this.currentMapColumn.findIndex((block) => !block)
 
-            if (emptyRow > -1) {
-                this.currentMapColumn[emptyRow] = this
+    //         if (emptyRow > -1) {
+    //             this.currentMapColumn[emptyRow] = this
 
-                this.currentMapColumn[this.row] = null
+    //             this.currentMapColumn[this.row] = null
 
-                this.row = emptyRow
+    //             this.row = emptyRow
 
-                this.state = SimpleBlockState.FALL
+    //             this.state = SimpleBlockState.FALL
 
-                cc.tween(this.node)
-                    .to(animationDurability, { position: cc.v3(this.node.x, (this.node.height + blocksGap) * emptyRow) })
-                    .call(() => this.state = SimpleBlockState.IDLE)
-                    .start()
-            }
-        }
-    }
+    //             this.move()
+    //         }
+    //     }
+    // }
 
     update = (dt) => {
-        if (this.node.active) {
-            this.fallDown()
-        }
+        // if (this.node.active) {
+        //     this.fallDown()
+        // }
     }
 }

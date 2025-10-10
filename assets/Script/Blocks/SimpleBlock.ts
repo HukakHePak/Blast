@@ -11,6 +11,10 @@ export enum BlockTypes {
     BLUE = 3,
     PURPLE = 4,
     YELLOW = 5,
+    BOMB = 6,
+    BOMB_M = 7,
+    RACKETS = 8,
+    RACKETS_H = 9
 }
 
 export enum SimpleBlockState {
@@ -23,8 +27,8 @@ export enum SimpleBlockState {
 
 @ccclass
 export default class SimplelBlock extends cc.Component {
-    @property
-    type: string = ''
+    @property({ type: cc.Enum(BlockTypes) })
+    type: BlockTypes = BlockTypes.NONE
 
     @property(cc.Node)
     gameNode: cc.Node = null
@@ -98,7 +102,23 @@ export default class SimplelBlock extends cc.Component {
         const chain = this.fireTouch()
 
         if (chain.length >= this.mapController.minimalChainLength) {
+            
             chain.forEach(block => block.remove())
+            console.log('remove')
+            
+            if(chain.length >= this.mapController.bombSpawnChainLength) {
+                // this.remove()
+                console.log('spawn bomb')
+                this.mapController.createBomb(this.column, this.row)
+
+
+
+
+                // this.mapController.
+            }
+            // this.remove()
+
+            
             this.game.levelController.fire(chain.length)
 
             return
@@ -186,6 +206,7 @@ export default class SimplelBlock extends cc.Component {
 
     update = (dt) => {
         if (this.node.active) {
+            console.log('fall')
             this.fallDown()
         }
     }

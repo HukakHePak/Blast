@@ -1,4 +1,4 @@
-import SimplelBlock from "../Blocks/SimpleBlock";
+import SimplelBlock, { BlockTypes } from "../Blocks/SimpleBlock";
 import Game from "../Game/Game";
 import LevelController from "../Level/LevelController";
 
@@ -26,10 +26,16 @@ export default class MapController extends cc.Component {
     blocksGap: number = 5
 
     @property(cc.Integer)
-    minimalChainLength = 2      // TODO: чтоб работало, нужно поменять алгоритм сжигания
+    minimalChainLength = 2
+
+    @property(cc.Integer)
+    bombSpawnChainLength = 5
 
     @property(cc.Node)
     colorBlocksNode: cc.Node = null
+
+    @property(cc.Node)
+    bombsBlocksNode: cc.Node = null
 
     @property(cc.Node)
     mapNode: cc.Node = null
@@ -37,8 +43,10 @@ export default class MapController extends cc.Component {
     @property(cc.Node)
     mapBackgroundNode: cc.Node = null
 
+
     @property(cc.Node)
     gameNode: cc.Node = null
+
 
     game: Game = null
 
@@ -46,6 +54,8 @@ export default class MapController extends cc.Component {
     mapData: Array<Array<SimplelBlock>> = []; // TODO: а зачем, собсна, массив? Сделать Map
 
     blockList: Array<SimplelBlock> = []
+
+    bombsList: Array<SimplelBlock> = []
 
     // state: MapControllerState = MapControllerState.NONE
 
@@ -62,6 +72,7 @@ export default class MapController extends cc.Component {
     start() { // TODO: spawn
         this.game = this.gameNode.getComponent(Game)
         this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
+        this.bombsList = this.bombsBlocksNode.getComponentsInChildren(SimplelBlock)
 
         this.init()
     }
@@ -118,12 +129,18 @@ export default class MapController extends cc.Component {
         }
     }
 
-    private createBlock(x: number, y: number): SimplelBlock {
-        const { blockList } = this
+    createBomb(x: number, y: number) {
+        const bombTypes = [BlockTypes.BOMB, BlockTypes.BOMB_M, BlockTypes.RACKETS, BlockTypes.RACKETS_H]
 
-        const blockId = Math.round(Math.random() * (blockList.length - 1))
+        const typeId =  Math.round(Math.random() * (bombTypes.length - 1))
 
-        const node = cc.instantiate(blockList[blockId].node)
+        this.createBlock(x, y, bombTypes[typeId])
+    }
+
+    createBlock(x: number, y: number, type?: BlockTypes) {
+        const node = cc.instantiate(this.getBlockByType(type).node)
+
+        console.log('spawn', type)
 
         this.mapNode.addChild(node)
 
@@ -131,11 +148,21 @@ export default class MapController extends cc.Component {
 
         block.spawn(this, x, y, () => this.checkMapMoves())
 
-        return block
+        this.mapData[x][y] = block
+    }
+
+    getBlockByType(type?: BlockTypes) {
+        if(type) {
+            return this.bombsList.find(bomb => bomb.type === type) || this.blockList.find(bomb => bomb.type === type)
+        }
+        
+        const blockId = Math.round(Math.random() * (this.blockList.length - 1))
+
+        return this.blockList[blockId]
     }
 
     replaceBlock(x: number, y: number, block: SimplelBlock) {
-        if(this.mapData[x]?.[y]){
+        if (this.mapData[x]?.[y]) {
             this.mapData[x][y] = block
 
             block.column = x
@@ -146,8 +173,6 @@ export default class MapController extends cc.Component {
     }
 
     swapBlocks(target: SimplelBlock, source: SimplelBlock) {
-        console.log({target, source})
-
         const { column, row } = source
 
         this.replaceBlock(target.column, target.row, source)
@@ -172,7 +197,7 @@ export default class MapController extends cc.Component {
             const lastIndex = this.mapHeight - 1
 
             if (!column[lastIndex]) {
-                column[lastIndex] = this.createBlock(x, lastIndex)
+                this.createBlock(x, lastIndex)
             }
         })
     }

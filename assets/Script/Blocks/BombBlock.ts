@@ -1,4 +1,4 @@
-import Animation, { AnimationConfig } from "../Utils/Animation";
+import Animates, { AnimatesConfig } from "../Utils/Animates";
 import { selectAny } from "../Utils/utils";
 import SimplelBlock, { BlockTypes } from "./SimpleBlock";
 
@@ -42,22 +42,22 @@ export default class BombBlock extends cc.Component {
             case BlockTypes.RACKETS:
                 fireBlocks.push(...mapController.mapData[column])
 
-                Animation.play(this.parent.game.media.lux, {
+                Animates.play(this.parent.game.media.lux, {
                     x: this.node.x,
                     target: mapNode,
                     ...selectAny([{ angle: 90, y: mapNode.height, }, { angle: -90 }])
-                } as AnimationConfig)
+                } as AnimatesConfig)
 
                 break;
 
             case BlockTypes.RACKETS_H:
                 fireBlocks.push(...mapController.mapData.map(column => column[row]))
 
-                Animation.play(this.parent.game.media.lux, {
+                Animates.play(this.parent.game.media.lux, {
                     y: this.node.y,
                     target: mapNode,
                     ...selectAny([{ x: mapNode.width }, { angle: 180 }])
-                } as AnimationConfig)
+                } as AnimatesConfig)
 
                 break;
 

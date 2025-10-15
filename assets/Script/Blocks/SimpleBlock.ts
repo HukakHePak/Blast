@@ -1,7 +1,6 @@
 import Booster from "../Boosters/Booster";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
-import Animation, { AnimationConfig } from "../Utils/Animation";
 import { selectAny } from "../Utils/utils";
 import BombBlock from "./BombBlock";
 

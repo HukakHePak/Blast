@@ -1,5 +1,3 @@
-import Animation, { AnimationConfig } from "../Utils/Animation";
-
 const { ccclass, property } = cc._decorator;
 
 @ccclass

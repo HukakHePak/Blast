@@ -1,5 +1,5 @@
 
-export interface AnimationConfig {
+export interface AnimatesConfig {
     x?: number,
     y?: number,
     time?: number
@@ -7,20 +7,20 @@ export interface AnimationConfig {
     target?: cc.Node
 }
 
-export default class Animation {
-    static fall(node: cc.Node, config?: AnimationConfig) {
+export default class Animates {
+    static fall(node: cc.Node, config?: AnimatesConfig) {
         console.log('fall')
     }
 
-    static slide(node: cc.Node, config?: AnimationConfig) {
+    static slide(node: cc.Node, config?: AnimatesConfig) {
 
     }
 
-    static spawn(node: cc.Node, config?: AnimationConfig) {
+    static spawn(node: cc.Node, config?: AnimatesConfig) {
 
     }
 
-    static play(sampleNode: cc.Node, config?: AnimationConfig) {
+    static play(sampleNode: cc.Node, config?: AnimatesConfig) {
         const node = cc.instantiate(sampleNode)
         const parent = config?.target || sampleNode.parent
 
@@ -44,11 +44,11 @@ export default class Animation {
         })
     }
 
-    static select(node: cc.Node, config?: AnimationConfig) {
+    static select(node: cc.Node, config?: AnimatesConfig) {
 
     }
 
-    static move(node: cc.Node, config?: AnimationConfig) {
+    static move(node: cc.Node, config?: AnimatesConfig) {
 
     }
 

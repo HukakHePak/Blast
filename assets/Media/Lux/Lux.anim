@@ -3,7 +3,7 @@
   "_name": "Lux",
   "_objFlags": 0,
   "_native": "",
-  "_duration": 0.4666666666666667,
+  "_duration": 0.43333333333333335,
   "sample": 60,
   "speed": 0.5,
   "wrapMode": 1,
@@ -165,18 +165,6 @@
             "frame": 0.4166666666666667,
             "value": {
               "__uuid__": "cdd93ad1-a53a-450c-a39a-988d7dbfed1d"
-            }
-          },
-          {
-            "frame": 0.43333333333333335,
-            "value": {
-              "__uuid__": "1d016012-418d-4c09-ade2-bbd5138a6b1f"
-            }
-          },
-          {
-            "frame": 0.45,
-            "value": {
-              "__uuid__": "c5835e5c-4d3f-401c-9611-9afa50d1e71a"
             }
           }
         ]

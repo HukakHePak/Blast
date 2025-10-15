@@ -54,8 +54,6 @@ export default class MapController extends cc.Component {
 
     bombsList: Array<SimplelBlock> = []
 
-    spawnCounter: number = 0
-
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}

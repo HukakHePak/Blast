@@ -1,4 +1,5 @@
 import LevelController from "../Level/LevelController";
+import Media from "../Media/Media";
 
 const { ccclass, property } = cc._decorator;
 
@@ -12,8 +13,13 @@ export default class Game extends cc.Component {
 
     @property(cc.Node)
     levelControllerNode: cc.Node = null
-
+    
     levelController: LevelController = null
+
+    @property(cc.Node)
+    mediaNode: cc.Node = null
+
+    media: Media = null
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -25,6 +31,10 @@ export default class Game extends cc.Component {
         this.levelController = this.levelControllerNode.getComponent(LevelController)
 
         this.levelController.init(this)
+
+        this.media = this.mediaNode.getComponent(Media)
+
+        // this.media.init(this)
     }
 
 

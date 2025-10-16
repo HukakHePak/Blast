@@ -15,12 +15,19 @@ export default class Media extends cc.Component {
     lux: cc.Node = null;
 
     @property(cc.Node)
-    atomic: cc.Node = null
+    explosion: cc.Node = null
+
+    @property(cc.Node)
+    screamsNode: cc.Node = null
+
+    // screams: 
 
     // @property(cc.Node)
     // lux: cc.Node = null;
 
-    // onLoad () {}
+    onLoad () {
+
+    }
 
     start() {
 

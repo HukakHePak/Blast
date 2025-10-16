@@ -21,7 +21,7 @@ export default class BombBlock extends cc.Component {
 
     onTouch() {
         const { game, mapController, type, column, row } = this.parent
-        const { bombRadius, mapHeight, mapWidth, mapNode } = mapController
+        const { bombRadius, mapHeight, mapWidth, mapNode, mapBackgroundNode } = mapController
 
         const fireBlocks = [];
 
@@ -37,12 +37,14 @@ export default class BombBlock extends cc.Component {
             case BlockTypes.BOMB_M:
                 mapController.clear()
                 game.levelController.fire(mapHeight * mapWidth - 1)
+                Animates.play(game.media.explosion, { target: mapNode, x: mapNode.width / 2, y: mapNode.height / 2 })
+
                 return;
 
             case BlockTypes.RACKETS:
                 fireBlocks.push(...mapController.mapData[column])
 
-                Animates.play(this.parent.game.media.lux, {
+                Animates.play(game.media.lux, {
                     x: this.node.x,
                     target: mapNode,
                     ...selectAny([{ angle: 90, y: mapNode.height, }, { angle: -90 }])
@@ -53,7 +55,7 @@ export default class BombBlock extends cc.Component {
             case BlockTypes.RACKETS_H:
                 fireBlocks.push(...mapController.mapData.map(column => column[row]))
 
-                Animates.play(this.parent.game.media.lux, {
+                Animates.play(game.media.lux, {
                     y: this.node.y,
                     target: mapNode,
                     ...selectAny([{ x: mapNode.width }, { angle: 180 }])

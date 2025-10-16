@@ -54,13 +54,9 @@ export default class MapController extends cc.Component {
 
     bombsList: Array<SimplelBlock> = []
 
-    spawnCounter: number = 0
-
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
-
-
 
     start() {
         this.game = this.gameNode.getComponent(Game)
@@ -96,21 +92,42 @@ export default class MapController extends cc.Component {
 
         if (this.hasMoves) return
 
-
-        this.clear()
+        this.reset()
         this.game.levelController.shake()
     }
 
     createBlock(x: number, y: number, type?: BlockTypes) {
-        const node = cc.instantiate(this.getBlockByType(type).node)
+        const sample = (this.getBlockByType(type) || selectAny(this.blockList))
+        const node = cc.instantiate(sample?.node)
 
         this.mapNode.addChild(node)
-
         const block = node.getComponent(SimplelBlock)
 
-        block.spawn(this, x, y)
-
         this.mapData[x][y] = block
+
+        switch (block.type) {
+            case BlockTypes.BOMB_M:
+                this.game.media.sounds.playSound('planted')
+                break;
+
+            case BlockTypes.BOMB:
+            case BlockTypes.RACKETS:
+            case BlockTypes.RACKETS_H:
+                this.game.media.sounds.playSound('C4')
+                break;
+
+            default:
+                break;
+        }
+
+
+        block.spawn(this, x, y)
+    }
+
+    reset() {
+        this.clear()
+
+        this.fillMap()
     }
 
     clear() {
@@ -119,8 +136,6 @@ export default class MapController extends cc.Component {
                 this.removeBlock(block)
             })
         })
-
-        this.fillMap()
     }
 
     get hasMoves() {
@@ -132,11 +147,7 @@ export default class MapController extends cc.Component {
     }
 
     getBlockByType(type?: BlockTypes) {
-        if (type) {
-            return this.bombsList.find(bomb => bomb.type === type) || this.blockList.find(bomb => bomb.type === type)
-        }
-
-        return selectAny(this.blockList)
+        return this.bombsList.find(bomb => bomb.type === type) || this.blockList.find(bomb => bomb.type === type)
     }
 
     replaceBlock(x: number, y: number, block: SimplelBlock | null) {
@@ -161,12 +172,10 @@ export default class MapController extends cc.Component {
         this.replaceBlock(column, row, target)
     }
 
-    removeBlocks(blocks: SimplelBlock[]) {
-        blocks.forEach(block => this.removeBlock(block))
+    removeBlocks(chain: SimplelBlock[]) {
+        chain.forEach(block => this.removeBlock(block))
 
-        this.scheduleOnce(() => {
-            this.fallMap()
-        }, this.game.animationDurability)
+        this.fallMap()
     }
 
     fallMap() {
@@ -192,9 +201,10 @@ export default class MapController extends cc.Component {
         if (!block) return
 
         const { column, row } = block
+        this.mapData[column][row] = null
+
         block.remove()
 
-        this.mapData[column][row] = null
     }
 
     getBlock(x: number, y: number) {

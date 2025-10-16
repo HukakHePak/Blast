@@ -1,6 +1,9 @@
+
+import CustomFly from "../Animation/CustomFly";
 import Booster from "../Boosters/Booster";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
+import Animates from "../Utils/Animates";
 import { selectAny } from "../Utils/utils";
 import BombBlock from "./BombBlock";
 
@@ -32,6 +35,7 @@ export enum SimpleBlockState {
     FALL = 'fall',
     SPAWN = 'spawn',
     TOUCHED = 'touched',
+    REMOVED = 'removed'
 }
 
 @ccclass
@@ -116,36 +120,35 @@ export default class SimplelBlock extends cc.Component {
 
         const chain = this.fireTouch()
 
-        if (chain.length >= this.mapController.minimalChainLength) {
-            this.mapController.removeBlocks(chain)
+        const { minimalChainLength, bombSpawnChainLength, maxBombSpawnChainLength } = this.mapController
 
-            if (chain.length >= this.mapController.bombSpawnChainLength) {
-
-                const bombType = chain.length >= this.mapController.maxBombSpawnChainLength
-                    ? BlockTypes.BOMB_M
-                    : selectAny([
-                        BlockTypes.BOMB,
-                        BlockTypes.RACKETS,
-                        BlockTypes.RACKETS_H
-                    ])
-
-                this.mapController.createBlock(
-                    this.column,
-                    this.row,
-                    bombType
-                )
-
-                this.game.levelController.fire(chain.length)
-
-                return
-            }
-
-            this.game.levelController.fire(chain.length)
-
+        if (chain.length < minimalChainLength) {
             return
         }
 
-        chain.forEach(block => block.state = SimpleBlockState.IDLE)
+        const [initiator, ...other] = chain
+
+        this.mapController.removeBlock(initiator)
+
+        if (chain.length >= bombSpawnChainLength) {
+            const bombType = chain.length >= maxBombSpawnChainLength
+                ? BlockTypes.BOMB_M
+                : selectAny([
+                    BlockTypes.BOMB,
+                    BlockTypes.RACKETS,
+                    BlockTypes.RACKETS_H
+                ])
+
+            this.mapController.createBlock(this.column, this.row, bombType)
+        }
+
+        this.game.media.sounds.playSound('Weee')
+
+        this.mapController.removeBlocks(other)
+        this.game.levelController.fire(chain.length)
+
+
+        chain.forEach(block => block && (block.state = SimpleBlockState.IDLE))
     }
 
     fireTouch(): Array<SimplelBlock> {
@@ -173,27 +176,36 @@ export default class SimplelBlock extends cc.Component {
     }
 
     remove() {
-        const { animationDurability, longAnimationMultiplier } = this.game
+        this.state = SimpleBlockState.REMOVED
+        this.node.zIndex += 1
 
-        return cc.tween(this.node)
-            .to(animationDurability * (1 - longAnimationMultiplier), { scale: 1.1 })
-            .to(animationDurability * longAnimationMultiplier, { scale: 0 })
-            .call(() => {
-                this.mapController.mapNode.removeChild(this.node)
-            })
-            .start()
+        // this.game.media.screams.play()
+        this.getComponent(CustomFly)?.fall()
+
+        Animates.play(this.node)
+
+        this.scheduleOnce(() => {
+            this.mapController.mapNode.removeChild(this.node)
+        }, this.game.animationDurability)
     }
 
     move() {
         const { blocksGap, blockSize } = this.mapController
         const { animationDurability } = this.game
 
+        this.node.zIndex += 1
+
         cc.tween(this.node)
             .to(animationDurability, { position: cc.v3((blockSize + blocksGap) * this.column, (blockSize + blocksGap) * this.row) })
-            .call(() => this.state = SimpleBlockState.IDLE)
+            .call(() => {
+                this.state = SimpleBlockState.IDLE
+                this.node.zIndex -= 1
+            })
             .start()
     }
 
 
-    // update = (dt) => { }
+    update = (dt) => {
+
+    }
 }

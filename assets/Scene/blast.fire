@@ -413,9 +413,11 @@
     "mapNode": {
       "__id__": 134
     },
-    "stepsLimit": 40,
-    "scoresLimit": 400,
+    "stepsLimit": 10,
+    "scoresLimit": 200,
     "mapShakesLimit": 3,
+    "minMapSize": 3,
+    "maxMapSize": 9,
     "boostersNode": {
       "__id__": 136
     },
@@ -1495,7 +1497,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 200.28,
+      "width": 193.2,
       "height": 75.6
     },
     "_anchorPoint": {
@@ -1547,8 +1549,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "ОЧКО:",
-    "_N$string": "ОЧКО:",
+    "_string": "очки:",
+    "_N$string": "очки:",
     "_fontSize": 60,
     "_lineHeight": 60,
     "_enableWrapText": true,
@@ -1890,7 +1892,7 @@
       "__id__": 37
     },
     "_enabled": true,
-    "alignMode": 1,
+    "alignMode": 2,
     "_target": null,
     "_alignFlags": 18,
     "_left": 0,
@@ -3398,7 +3400,7 @@
       "__id__": 36
     },
     "_enabled": true,
-    "alignMode": 1,
+    "alignMode": 2,
     "_target": null,
     "_alignFlags": 18,
     "_left": 0,
@@ -5477,9 +5479,6 @@
       "__id__": 136
     },
     "_enabled": true,
-    "boostersContainer": {
-      "__id__": 93
-    },
     "boostersNode": {
       "__id__": 93
     },
@@ -5674,7 +5673,7 @@
     },
     "_enabled": true,
     "_clip": {
-      "__uuid__": "15608b8e-d3c9-4539-bb3c-09aa8d8f8495"
+      "__uuid__": "a9b99026-1653-498b-aec2-cb9f5fcf73ba"
     },
     "_volume": 1,
     "_mute": false,

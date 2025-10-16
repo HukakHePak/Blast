@@ -32,10 +32,9 @@ export default class Game extends cc.Component {
 
     start() {
         this.levelController = this.levelControllerNode.getComponent(LevelController)
-
-        this.levelController.init(this)
-
         this.media = this.mediaNode.getComponent(Media)
+        
+        this.levelController.init(this)
 
         // this.media.init(this)
     }

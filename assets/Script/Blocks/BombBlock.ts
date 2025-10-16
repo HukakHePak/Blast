@@ -43,7 +43,7 @@ export default class BombBlock extends cc.Component {
                 break;
 
             case BlockTypes.BOMB_M:
-                mapController.clear()
+                mapController.reset()
                 game.levelController.fire(mapHeight * mapWidth - 1)
 
                 Animates.play(game.media.explosion, { target: mapNode, x: mapNode.width / 2, y: mapNode.height / 2 })

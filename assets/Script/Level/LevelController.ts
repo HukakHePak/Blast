@@ -1,7 +1,9 @@
+import { BoosterType } from "../Boosters/Booster";
 import BoostersController from "../Boosters/BoostersController";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
 import Animates from "../Utils/Animates";
+import { selectBetween } from "../Utils/utils";
 
 const { ccclass, property } = cc._decorator;
 
@@ -41,6 +43,12 @@ export default class LevelController extends cc.Component {
     @property
     mapShakesLimit = 3
 
+    @property
+    minMapSize = 3
+
+    @property
+    maxMapSize = 9
+
     @property(cc.Node)
     boostersNode: cc.Node = null
 
@@ -51,17 +59,20 @@ export default class LevelController extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {}
+    onLoad() {
 
-    start() {        
+    }
+    
+    start() {
         this.victoryNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
         this.defeatNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
+
     }
     
     init(game: Game) {
         this.mapController = this.mapNode.getComponent(MapController)
         this.boostersController = this.boostersNode.getComponent(BoostersController)
-
+        
         this.game = game
         
         this.boostersController.init(game)
@@ -70,9 +81,7 @@ export default class LevelController extends cc.Component {
     shake() {
         this.mapShakes += 1
 
-        console.log(this.mapShakes)
-
-        if (this.mapShakes > this.mapShakesLimit) {
+        if (this.mapShakes > this.mapShakesLimit && !this.boostersController.hasBoosters) {
             this.defeat()
         }
     }
@@ -97,20 +106,41 @@ export default class LevelController extends cc.Component {
 
     victory() {
         this.victoryNode.active = true
+        this.mapController.clear()
     }
-
+    
     defeat() {
         this.defeatNode.active = true
+        this.mapController.clear()
     }
-
+    
     restart() {
         this.victoryNode.active = false
         this.defeatNode.active = false
         this.steps = 0
         this.scores = 0
         this.mapShakes = 0
+        
+        // this.mapController.clear()
 
-        this.mapController.clear()
+        this.generateLevel()
+    }
+
+    generateLevel() {
+        const height =  Math.round(selectBetween(this.minMapSize, this.maxMapSize))
+        const width = Math.round(selectBetween(this.minMapSize, this.maxMapSize))
+
+        this.mapController.mapHeight = height
+        this.mapController.mapWidth = width
+
+        this.scoresLimit = width * height * Math.round(selectBetween(3, 9))
+
+        this.stepsLimit = Math.round(this.scoresLimit / Math.ceil(Math.min(width, height) / 2))
+
+        this.boostersController.updateCount(BoosterType.BOMB, Math.round(Math.sqrt(width * height)))
+        this.boostersController.updateCount(BoosterType.TELEPORT, Math.round(Math.sqrt(width * height) * 1.5))
+
+        this.mapController.init()
     }
 
     updateLabels() {

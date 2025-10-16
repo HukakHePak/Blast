@@ -47,6 +47,7 @@ export default class BombBlock extends cc.Component {
                 game.levelController.fire(mapHeight * mapWidth - 1)
 
                 Animates.play(game.media.explosion, { target: mapNode, x: mapNode.width / 2, y: mapNode.height / 2 })
+                Animates.play(game.trembleScreenNode)
 
                 return;
 

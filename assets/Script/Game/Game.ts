@@ -21,6 +21,9 @@ export default class Game extends cc.Component {
 
     media: Media = null
 
+    @property(cc.Node)
+    trembleScreenNode: cc.Node = null
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}

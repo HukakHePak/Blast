@@ -24,6 +24,8 @@ export default class Booster extends cc.Component {
 
     pickedBlock: SimplelBlock = null
 
+    pickedBlockAnimation: cc.Tween = null
+
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -52,25 +54,46 @@ export default class Booster extends cc.Component {
     }
 
     use(block: SimplelBlock) {
+        const { game } = this.boostersController
 
-        const { mapController } = this.boostersController.game.levelController
+        const { mapController } = game.levelController
 
         switch (this.type) {
             case BoosterType.BOMB:
                 // mapController.removeBlock(block)
-                block.remove()
+                // block.remove()
 
-                this.boostersController.game.levelController.fire(1)
+                cc.tween(block.node)
+                    .to(game.animationDurability * (1 - game.longAnimationMultiplier), { scale: 1 })
+                    .to(game.animationDurability * game.longAnimationMultiplier, { scale: 0 })
+                    .call(() => {
+                        block.remove()
+                    })
+                    .start()
+
+                // game.levelController.fire(1)
 
                 mapController.createBlock(block.column, block.row, BlockTypes.BOMB)
 
                 break;
 
             case BoosterType.TELEPORT:
+                if(this.pickedBlock === block) {
+                    game.media.sounds.playSound('alert')
+                    return
+                }
+
                 if (this.pickedBlock) {
                     mapController.swapBlocks(this.pickedBlock, block)
+                    this.pickedBlock.node.angle = 0
+                    this.pickedBlock = null
+
+                    game.media.sounds.playSound('airplane')
+                    game.media.sounds.getSound('helicopter').stop()
                 } else {
                     this.pickedBlock = block
+
+                    game.media.sounds.playSound('helicopter')
                     return;
                 }
                 break;
@@ -94,5 +117,9 @@ export default class Booster extends cc.Component {
 
     update(dt) {
         this.labelCount.string = `${this.count}`
+
+        if (this.pickedBlock) {
+            this.pickedBlock.node.angle += (this.count % 2 ? 1 : -1) * this.boostersController.game.animationDurability * dt * 1000
+        }
     }
 }

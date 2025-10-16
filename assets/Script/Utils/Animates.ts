@@ -27,6 +27,8 @@ export default class Animates {
 
         node.active = true
 
+        node.zIndex +=1
+
         node.x = config?.x ?? node.x
         node.y = config?.y ?? node.y
         node.angle = config?.angle ?? node.angle
@@ -42,6 +44,10 @@ export default class Animates {
                 parent.removeChild(node)
             })
         }
+    }
+
+    despawn(node: cc.Node, config?: AnimatesConfig) {
+
     }
 
     static select(node: cc.Node, config?: AnimatesConfig) {

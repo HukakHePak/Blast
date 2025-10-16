@@ -17,7 +17,7 @@ export default class CustomFly extends cc.Component {
 
     isFalling: boolean = false
 
-    duration: number = 10
+    duration: number = 40
 
     // onLoad() { }
 

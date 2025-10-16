@@ -106,8 +106,23 @@ export default class MapController extends cc.Component {
 
         this.mapData[x][y] = block
 
-        block.spawn(this, x, y)
+        switch(block.type) {
+            case BlockTypes.BOMB_M:
+                this.game.media.sounds.playSound('planted')
+                break;
+            
+            case BlockTypes.BOMB:
+            case BlockTypes.RACKETS:
+            case BlockTypes.RACKETS_H:
+                this.game.media.sounds.playSound('C4')
+                break;
+                
+            default:
+                break;
+        }
 
+
+        block.spawn(this, x, y)
     }
 
     clear() {
@@ -160,7 +175,7 @@ export default class MapController extends cc.Component {
 
     removeBlocks(chain: SimplelBlock[]) {
         chain.forEach(block => this.removeBlock(block))
-        
+
         this.fallMap()
     }
 

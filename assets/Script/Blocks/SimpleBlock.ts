@@ -143,7 +143,7 @@ export default class SimplelBlock extends cc.Component {
         }
 
         this.game.media.sounds.playSound('Weee')
-        
+
         this.mapController.removeBlocks(other)
         this.game.levelController.fire(chain.length)
 
@@ -193,9 +193,14 @@ export default class SimplelBlock extends cc.Component {
         const { blocksGap, blockSize } = this.mapController
         const { animationDurability } = this.game
 
+        this.node.zIndex += 1
+
         cc.tween(this.node)
             .to(animationDurability, { position: cc.v3((blockSize + blocksGap) * this.column, (blockSize + blocksGap) * this.row) })
-            .call(() => this.state = SimpleBlockState.IDLE)
+            .call(() => {
+                this.state = SimpleBlockState.IDLE
+                this.node.zIndex -= 1
+            })
             .start()
     }
 

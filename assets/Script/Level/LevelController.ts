@@ -1,6 +1,7 @@
 import BoostersController from "../Boosters/BoostersController";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
+import Animates from "../Utils/Animates";
 
 const { ccclass, property } = cc._decorator;
 
@@ -79,6 +80,9 @@ export default class LevelController extends cc.Component {
     fire(count: number) {
         this.scores += count
         this.steps += 1
+
+        Animates.play(this.stepsLabel.node)
+        Animates.play(this.scoresLabel.node)
 
         if (this.scores >= this.scoresLimit) {
             this.victory()

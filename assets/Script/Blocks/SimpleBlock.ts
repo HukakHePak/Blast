@@ -1,3 +1,5 @@
+
+import CustomFly from "../Animation/CustomFly";
 import Booster from "../Boosters/Booster";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
@@ -32,6 +34,7 @@ export enum SimpleBlockState {
     FALL = 'fall',
     SPAWN = 'spawn',
     TOUCHED = 'touched',
+    REMOVED = 'removed'
 }
 
 @ccclass
@@ -116,7 +119,31 @@ export default class SimplelBlock extends cc.Component {
 
         const chain = this.fireTouch()
 
-        this.mapController.removeBlocks(chain)
+        const { minimalChainLength, bombSpawnChainLength, maxBombSpawnChainLength } = this.mapController
+
+        if (chain.length < minimalChainLength) {
+            return
+        }
+
+        const [initiator, ...other] = chain
+
+        this.mapController.removeBlock(initiator)
+
+        if (chain.length >= bombSpawnChainLength) {
+            const bombType = chain.length >= maxBombSpawnChainLength
+                ? BlockTypes.BOMB_M
+                : selectAny([
+                    BlockTypes.BOMB,
+                    BlockTypes.RACKETS,
+                    BlockTypes.RACKETS_H
+                ])
+
+            this.mapController.createBlock(this.column, this.row, bombType)
+        }
+
+        this.mapController.removeBlocks(other)
+        this.game.levelController.fire(chain.length)
+
 
         chain.forEach(block => block && (block.state = SimpleBlockState.IDLE))
     }
@@ -146,11 +173,18 @@ export default class SimplelBlock extends cc.Component {
     }
 
     remove() {
-        const { animationDurability, longAnimationMultiplier } = this.game
+        const { animationDurability } = this.game
 
-        return cc.tween(this.node)
-            .to(animationDurability * (1 - longAnimationMultiplier), { scale: 1.1 })
-            .to(animationDurability * longAnimationMultiplier, { scale: 0 })
+        this.state = SimpleBlockState.REMOVED
+
+        this.game.media.screams.play()
+
+        this.getComponent(CustomFly)?.fall()
+
+        this.node.zIndex += 1
+
+        cc.tween(this.node)
+            .to(animationDurability, { opacity: 0 }, { easing: 'expoIn' })
             .call(() => {
                 this.mapController.mapNode.removeChild(this.node)
             })
@@ -168,5 +202,7 @@ export default class SimplelBlock extends cc.Component {
     }
 
 
-    // update = (dt) => { }
+    update = (dt) => {
+
+    }
 }

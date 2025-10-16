@@ -1,4 +1,3 @@
-
 export interface AnimatesConfig {
     x?: number,
     y?: number,
@@ -8,10 +7,6 @@ export interface AnimatesConfig {
 }
 
 export default class Animates {
-    static fall(node: cc.Node, config?: AnimatesConfig) {
-        console.log('fall')
-    }
-
     static slide(node: cc.Node, config?: AnimatesConfig) {
 
     }
@@ -25,7 +20,7 @@ export default class Animates {
         const parent = config?.target || sampleNode.parent
 
         parent.addChild(node)
-        
+
         node.active = true
 
         node.x = config?.x ?? node.x
@@ -50,5 +45,4 @@ export default class Animates {
     static move(node: cc.Node, config?: AnimatesConfig) {
 
     }
-
 }

@@ -3,3 +3,7 @@ export const selectAny = <T>(array: T[]) => {
     
     return array[id]
 }
+
+export const selectBetween = (start: number, end: number) => {
+    return start + Math.random() * (end - start)
+}

@@ -1,4 +1,3 @@
-import Animates from "../Utils/Animates";
 import { selectAny } from "../Utils/utils";
 
 const { ccclass, property } = cc._decorator;
@@ -26,27 +25,29 @@ export default class SoundSystem extends cc.Component {
     }
 
     play() {
-        // const startedSounds = this.sounds.filter(sound => sound.isPlaying)
-
-
-
-        // const nextSound = selectAny(this.sounds.filter(sound => sound !== lastSound))
-
-        // nextSound.play()
-
         const sound = selectAny(this.sounds)
-        // // const sample = selectAny(this.sounds)
-        // const copy = cc.instantiate(sound.node)
 
-        // this.node.addChild(copy)
-        // sound.stop()
+        sound.volume = this.volumes.get(sound)
         sound.play()
 
         cc.tween(sound)
-            .by(0, { volume: this.volumes.get(sound)})
             .to(this.duration, { volume: 0.1 })
             .call(() => this.node.removeChild(sound.node))
             .start()
+    }
+
+    playParallel(count: number) {
+        const sounds = this.sounds.sort(() => Math.random() > 0.5 ? 1 : -1).slice(0, count)
+
+        sounds.forEach(sound => sound.play())
+    }
+
+    playChain(count: number, delay: number) {
+        const sounds = this.sounds.sort(() => Math.random() > 0.5 ? 1 : -1).slice(0, count)
+
+        this.schedule(() => {
+            sounds.shift()?.play()
+        }, delay, sounds.length - 1, 0)
     }
 
     // update (dt) {}

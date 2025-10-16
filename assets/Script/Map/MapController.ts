@@ -58,8 +58,6 @@ export default class MapController extends cc.Component {
 
     // onLoad () {}
 
-
-
     start() {
         this.game = this.gameNode.getComponent(Game)
         this.blockList = this.colorBlocksNode.getComponentsInChildren(SimplelBlock)
@@ -161,49 +159,9 @@ export default class MapController extends cc.Component {
     }
 
     removeBlocks(chain: SimplelBlock[]) {
-        const chainLength = chain.length
-        const [initiator] = chain
-
-
-        if (chainLength < this.minimalChainLength) {
-            return
-        }
-
-        this.schedule(() => {
-            if (chain.length) {
-                const block = chain.shift()
-
-                this.game.media.screams.play()
-
-                this.removeBlock(block)
-
-                return
-            }
-
-            if (chainLength >= this.bombSpawnChainLength) {
-
-                const bombType = chainLength >= this.maxBombSpawnChainLength
-                    ? BlockTypes.BOMB_M
-                    : selectAny([
-                        BlockTypes.BOMB,
-                        BlockTypes.RACKETS,
-                        BlockTypes.RACKETS_H
-                    ])
-
-                this.createBlock(initiator.column, initiator.row, bombType)
-            }
-
-            this.game.levelController.fire(chain.length)
-
-            this.scheduleOnce(() => {
-                this.fallMap()
-            }, this.game.animationDurability)
-
-        }, this.game.animationDurability * (1 - this.game.longAnimationMultiplier), chainLength)
-    }
-
-    createBomb() {
-
+        chain.forEach(block => this.removeBlock(block))
+        
+        this.fallMap()
     }
 
     fallMap() {

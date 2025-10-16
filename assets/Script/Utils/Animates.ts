@@ -16,10 +16,14 @@ export default class Animates {
     }
 
     static play(sampleNode: cc.Node, config?: AnimatesConfig) {
-        const node = cc.instantiate(sampleNode)
-        const parent = config?.target || sampleNode.parent
+        let node = sampleNode
+        const parent = config?.target
 
-        parent.addChild(node)
+        if (parent) {
+            node = cc.instantiate(sampleNode)
+            parent.addChild(node)
+        }
+
 
         node.active = true
 
@@ -33,9 +37,11 @@ export default class Animates {
         animation?.play()
         sound?.play()
 
-        animation.on(cc.Animation.EventType.FINISHED, () => {
-            parent.removeChild(node)
-        })
+        if (parent) {
+            animation.on(cc.Animation.EventType.FINISHED, () => {
+                parent.removeChild(node)
+            })
+        }
     }
 
     static select(node: cc.Node, config?: AnimatesConfig) {

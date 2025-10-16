@@ -3,6 +3,7 @@ import CustomFly from "../Animation/CustomFly";
 import Booster from "../Boosters/Booster";
 import Game from "../Game/Game";
 import MapController from "../Map/MapController";
+import Animates from "../Utils/Animates";
 import { selectAny } from "../Utils/utils";
 import BombBlock from "./BombBlock";
 
@@ -173,22 +174,35 @@ export default class SimplelBlock extends cc.Component {
     }
 
     remove() {
-        const { animationDurability } = this.game
-
         this.state = SimpleBlockState.REMOVED
-
-        this.game.media.screams.play()
-
-        this.getComponent(CustomFly)?.fall()
-
         this.node.zIndex += 1
 
-        cc.tween(this.node)
-            .to(animationDurability, { opacity: 0 }, { easing: 'expoIn' })
-            .call(() => {
-                this.mapController.mapNode.removeChild(this.node)
-            })
-            .start()
+        this.game.media.screams.play()
+        this.getComponent(CustomFly)?.fall()
+
+        // const animation = this.getComponent(cc.Animation)
+
+        // animation.on(cc.Animation.EventType.FINISHED, () => {
+        //     this.mapController.mapNode.removeChild(this.node)
+        // })
+
+        // animation.play()
+
+        // const audio = this.getComponent(cc.AudioSource)
+
+
+        Animates.play(this.node)
+
+        this.scheduleOnce(() => {
+            this.mapController.mapNode.removeChild(this.node)
+        }, this.game.animationDurability)
+
+        // cc.tween(this.node)
+        //     .to(animationDurability, { opacity: 0 }, { easing: 'expoIn' })
+        //     .call(() => {
+        //         this.mapController.mapNode.removeChild(this.node)
+        //     })
+        //     .start()
     }
 
     move() {

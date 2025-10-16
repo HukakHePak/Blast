@@ -33,7 +33,6 @@ export default class BombBlock extends cc.Component {
                     }
                 }
 
-                Animates.play(this.node)
                 break;
 
             case BlockTypes.BOMB_M:
@@ -63,7 +62,6 @@ export default class BombBlock extends cc.Component {
                     target: mapNode,
                     ...selectAny([{ x: mapNode.width }, { angle: 180 }])
                 } as AnimatesConfig)
-
                 break;
 
             default: break;

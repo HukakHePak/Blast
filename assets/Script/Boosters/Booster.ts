@@ -57,7 +57,9 @@ export default class Booster extends cc.Component {
 
         switch (this.type) {
             case BoosterType.BOMB:
-                mapController.removeBlock(block)
+                // mapController.removeBlock(block)
+                block.remove()
+
                 this.boostersController.game.levelController.fire(1)
 
                 mapController.createBlock(block.column, block.row, BlockTypes.BOMB)

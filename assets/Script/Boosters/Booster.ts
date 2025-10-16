@@ -40,7 +40,29 @@ export default class Booster extends cc.Component {
 
     }
 
+    get isActive(): boolean {
+        return this.boostersController.active === this
+    }
+
+    resetPickedBLock() {
+        if(!this.pickedBlock) return
+
+        const { game } = this.boostersController
+
+        this.pickedBlock.node.angle = 0
+        this.pickedBlock = null
+
+        game.media.sounds.getSound('helicopter').stop()
+    }
+
     onTouch() {
+        if (this.isActive) {
+            this.resetPickedBLock()
+            this.boostersController.deactivate()
+
+            return
+        }
+
         this.boostersController.activate(this)
 
         const { game } = this.boostersController
@@ -70,18 +92,16 @@ export default class Booster extends cc.Component {
                 break;
 
             case BoosterType.TELEPORT:
-                if(this.pickedBlock === block) {
+                if (this.pickedBlock === block) {
                     game.media.sounds.playSound('alert')
                     return
                 }
 
                 if (this.pickedBlock) {
                     mapController.swapBlocks(this.pickedBlock, block)
-                    this.pickedBlock.node.angle = 0
-                    this.pickedBlock = null
-
                     game.media.sounds.playSound('airplane')
-                    game.media.sounds.getSound('helicopter').stop()
+                    this.resetPickedBLock()
+
                 } else {
                     this.pickedBlock = block
 

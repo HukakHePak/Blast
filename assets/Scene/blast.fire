@@ -6750,7 +6750,7 @@
     "_clip": {
       "__uuid__": "6dc18c6c-62ca-4f38-b589-a7fc4764cf9f"
     },
-    "_volume": 0.4,
+    "_volume": 0.2,
     "_mute": false,
     "_loop": false,
     "_firstlyEnabled": true,
@@ -6831,7 +6831,7 @@
     "_clip": {
       "__uuid__": "e7e6ea35-a2b3-4a67-b51e-5173a8dea5ec"
     },
-    "_volume": 1,
+    "_volume": 0.4,
     "_mute": false,
     "_loop": false,
     "_firstlyEnabled": true,
@@ -6912,7 +6912,7 @@
     "_clip": {
       "__uuid__": "5ed23d9e-abaa-4b65-a8b2-8f99de050383"
     },
-    "_volume": 0.4,
+    "_volume": 0.2,
     "_mute": false,
     "_loop": true,
     "_firstlyEnabled": true,

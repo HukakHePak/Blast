@@ -8,20 +8,27 @@ const { ccclass } = cc._decorator;
 export default class BombBlock extends cc.Component {
     parent: SimplelBlock
 
+    isTouched: boolean = false
+
     start() {
         this.parent = this.getComponent(SimplelBlock)
     }
 
     handleBlocks(blocks: SimplelBlock[]) {
-        const clearBombs = blocks.filter(block => block?.type < BlockTypes.BOMB)
+        const removableBlocks = blocks.filter(block => block?.type < BlockTypes.BOMB)
 
-        this.parent.mapController.removeBlocks([this.parent, ...clearBombs])
-        this.parent.game.levelController.fire(clearBombs.length)
+        const { game, mapController } = this.parent
+
+        game.media.screams.playParallel(removableBlocks.length)
+        mapController.removeBlocks([this.parent, ...removableBlocks])
+        game.levelController.fire(removableBlocks.length)
     }
 
     onTouch() {
+        if (this.isTouched) return
+
         const { game, mapController, type, column, row } = this.parent
-        const { bombRadius, mapHeight, mapWidth, mapNode, mapBackgroundNode } = mapController
+        const { bombRadius, mapHeight, mapWidth, mapNode } = mapController
 
         const fireBlocks = [];
 

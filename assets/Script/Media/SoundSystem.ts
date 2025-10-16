@@ -24,10 +24,19 @@ export default class SoundSystem extends cc.Component {
 
     }
 
+    getSound(name: string): cc.AudioSource {
+        return this.sounds.find(sound => sound.node.name === name)
+    }
+
+    playSound(name: string) {
+        this.getSound(name)?.play()
+    }
+
     play() {
         const sound = selectAny(this.sounds)
 
         sound.volume = this.volumes.get(sound)
+
         sound.play()
 
         cc.tween(sound)

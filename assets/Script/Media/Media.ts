@@ -22,13 +22,23 @@ export default class Media extends cc.Component {
     @property(cc.Node)
     screamsNode: cc.Node = null
 
+    @property(cc.Node)
+    soundsNode: cc.Node = null
+
+    @property(cc.Node)
+    mainThemeNode: cc.Node = null
+
     screams: SoundSystem
+    sounds: SoundSystem
+    mainTheme: SoundSystem
 
     // @property(cc.Node)
     // lux: cc.Node = null;
 
     onLoad () {
         this.screams = this.screamsNode.getComponent(SoundSystem)
+        this.sounds = this.soundsNode.getComponent(SoundSystem)
+        this.mainTheme = this.mainThemeNode.getComponent(SoundSystem)
     }
 
     start() {

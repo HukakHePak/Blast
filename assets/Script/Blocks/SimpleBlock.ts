@@ -142,6 +142,8 @@ export default class SimplelBlock extends cc.Component {
             this.mapController.createBlock(this.column, this.row, bombType)
         }
 
+        this.game.media.sounds.playSound('Weee')
+        
         this.mapController.removeBlocks(other)
         this.game.levelController.fire(chain.length)
 
@@ -177,32 +179,14 @@ export default class SimplelBlock extends cc.Component {
         this.state = SimpleBlockState.REMOVED
         this.node.zIndex += 1
 
-        this.game.media.screams.play()
+        // this.game.media.screams.play()
         this.getComponent(CustomFly)?.fall()
-
-        // const animation = this.getComponent(cc.Animation)
-
-        // animation.on(cc.Animation.EventType.FINISHED, () => {
-        //     this.mapController.mapNode.removeChild(this.node)
-        // })
-
-        // animation.play()
-
-        // const audio = this.getComponent(cc.AudioSource)
-
 
         Animates.play(this.node)
 
         this.scheduleOnce(() => {
             this.mapController.mapNode.removeChild(this.node)
         }, this.game.animationDurability)
-
-        // cc.tween(this.node)
-        //     .to(animationDurability, { opacity: 0 }, { easing: 'expoIn' })
-        //     .call(() => {
-        //         this.mapController.mapNode.removeChild(this.node)
-        //     })
-        //     .start()
     }
 
     move() {

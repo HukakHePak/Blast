@@ -413,7 +413,7 @@
     "mapNode": {
       "__id__": 134
     },
-    "stepsLimit": 10,
+    "stepsLimit": 40,
     "scoresLimit": 200,
     "mapShakesLimit": 3,
     "minMapSize": 3,

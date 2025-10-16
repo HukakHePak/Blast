@@ -5582,7 +5582,7 @@
         "__id__": 144
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 146
@@ -5709,7 +5709,7 @@
     "_clip": {
       "__uuid__": "e7a09fd0-7bbf-4d32-98bb-22b539432899"
     },
-    "_volume": 1,
+    "_volume": 0.4,
     "_mute": false,
     "_loop": false,
     "_firstlyEnabled": true,
@@ -5790,7 +5790,7 @@
     "_clip": {
       "__uuid__": "a618b129-6ced-4ae4-9dc3-2fcd30e30c7b"
     },
-    "_volume": 1,
+    "_volume": 0.4,
     "_mute": false,
     "_loop": false,
     "_firstlyEnabled": true,
@@ -5871,7 +5871,7 @@
     "_clip": {
       "__uuid__": "c19042ce-30ab-49a2-aaf9-61f818bb240b"
     },
-    "_volume": 1,
+    "_volume": 0.6,
     "_mute": false,
     "_loop": false,
     "_firstlyEnabled": true,
@@ -5952,7 +5952,7 @@
     "_clip": {
       "__uuid__": "7754b26c-9cff-40ef-8731-74fdd43899c5"
     },
-    "_volume": 1,
+    "_volume": 0.6,
     "_mute": false,
     "_loop": false,
     "_firstlyEnabled": true,
@@ -6114,7 +6114,7 @@
     "_clip": {
       "__uuid__": "6d22fb43-35a2-4fae-884e-619c27660e14"
     },
-    "_volume": 1,
+    "_volume": 0.4,
     "_mute": false,
     "_loop": false,
     "_firstlyEnabled": true,
@@ -6130,8 +6130,6 @@
       "__id__": 133
     },
     "_enabled": true,
-    "label": null,
-    "text": "hello",
     "_id": "a2Vj3W2SpI65wbAw8Pilqa"
   },
   {

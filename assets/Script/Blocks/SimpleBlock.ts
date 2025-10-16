@@ -102,6 +102,8 @@ export default class SimplelBlock extends cc.Component {
             return
         }
 
+        this.game.media.screams.play()
+
         if (BombTypes.includes(this.type)) {
             this.getComponent(BombBlock).onTouch()
 

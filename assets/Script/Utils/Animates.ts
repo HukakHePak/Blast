@@ -40,7 +40,6 @@ export default class Animates {
 
         animation.on(cc.Animation.EventType.FINISHED, () => {
             parent.removeChild(node)
-            
         })
     }
 

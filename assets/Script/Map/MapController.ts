@@ -106,9 +106,10 @@ export default class MapController extends cc.Component {
 
         const block = node.getComponent(SimplelBlock)
 
+        this.mapData[x][y] = block
+
         block.spawn(this, x, y)
 
-        this.mapData[x][y] = block
     }
 
     clear() {
@@ -159,12 +160,50 @@ export default class MapController extends cc.Component {
         this.replaceBlock(column, row, target)
     }
 
-    removeBlocks(blocks: SimplelBlock[]) {
-        blocks.forEach(block => this.removeBlock(block))
+    removeBlocks(chain: SimplelBlock[]) {
+        const chainLength = chain.length
+        const [initiator] = chain
 
-        this.scheduleOnce(() => {
-            this.fallMap()
-        }, this.game.animationDurability)
+
+        if (chainLength < this.minimalChainLength) {
+            return
+        }
+
+        this.schedule(() => {
+            if (chain.length) {
+                const block = chain.shift()
+
+                this.game.media.screams.play()
+
+                this.removeBlock(block)
+
+                return
+            }
+
+            if (chainLength >= this.bombSpawnChainLength) {
+
+                const bombType = chainLength >= this.maxBombSpawnChainLength
+                    ? BlockTypes.BOMB_M
+                    : selectAny([
+                        BlockTypes.BOMB,
+                        BlockTypes.RACKETS,
+                        BlockTypes.RACKETS_H
+                    ])
+
+                this.createBlock(initiator.column, initiator.row, bombType)
+            }
+
+            this.game.levelController.fire(chain.length)
+
+            this.scheduleOnce(() => {
+                this.fallMap()
+            }, this.game.animationDurability)
+
+        }, this.game.animationDurability * (1 - this.game.longAnimationMultiplier), chainLength)
+    }
+
+    createBomb() {
+
     }
 
     fallMap() {
@@ -190,9 +229,10 @@ export default class MapController extends cc.Component {
         if (!block) return
 
         const { column, row } = block
+        this.mapData[column][row] = null
+
         block.remove()
 
-        this.mapData[column][row] = null
     }
 
     getBlock(x: number, y: number) {

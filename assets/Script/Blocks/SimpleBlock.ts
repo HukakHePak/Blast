@@ -102,8 +102,6 @@ export default class SimplelBlock extends cc.Component {
             return
         }
 
-        this.game.media.screams.play()
-
         if (BombTypes.includes(this.type)) {
             this.getComponent(BombBlock).onTouch()
 
@@ -118,36 +116,9 @@ export default class SimplelBlock extends cc.Component {
 
         const chain = this.fireTouch()
 
-        if (chain.length >= this.mapController.minimalChainLength) {
-            this.mapController.removeBlocks(chain)
+        this.mapController.removeBlocks(chain)
 
-            if (chain.length >= this.mapController.bombSpawnChainLength) {
-
-                const bombType = chain.length >= this.mapController.maxBombSpawnChainLength
-                    ? BlockTypes.BOMB_M
-                    : selectAny([
-                        BlockTypes.BOMB,
-                        BlockTypes.RACKETS,
-                        BlockTypes.RACKETS_H
-                    ])
-
-                this.mapController.createBlock(
-                    this.column,
-                    this.row,
-                    bombType
-                )
-
-                this.game.levelController.fire(chain.length)
-
-                return
-            }
-
-            this.game.levelController.fire(chain.length)
-
-            return
-        }
-
-        chain.forEach(block => block.state = SimpleBlockState.IDLE)
+        chain.forEach(block => block && (block.state = SimpleBlockState.IDLE))
     }
 
     fireTouch(): Array<SimplelBlock> {

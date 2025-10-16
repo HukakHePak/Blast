@@ -24,9 +24,6 @@ export default class Booster extends cc.Component {
 
     pickedBlock: SimplelBlock = null
 
-    pickedBlockAnimation: cc.Tween = null
-
-
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
@@ -60,9 +57,6 @@ export default class Booster extends cc.Component {
 
         switch (this.type) {
             case BoosterType.BOMB:
-                // mapController.removeBlock(block)
-                // block.remove()
-
                 cc.tween(block.node)
                     .to(game.animationDurability * (1 - game.longAnimationMultiplier), { scale: 1 })
                     .to(game.animationDurability * game.longAnimationMultiplier, { scale: 0 })
@@ -70,8 +64,6 @@ export default class Booster extends cc.Component {
                         block.remove()
                     })
                     .start()
-
-                // game.levelController.fire(1)
 
                 mapController.createBlock(block.column, block.row, BlockTypes.BOMB)
 

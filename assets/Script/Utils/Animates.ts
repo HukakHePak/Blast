@@ -3,6 +3,7 @@ export interface AnimatesConfig {
     y?: number,
     duration?: number
     angle?: number
+    scaleX?: number
     target?: cc.Node
 }
 
@@ -33,13 +34,15 @@ export default class Animates {
         node.y = config?.y ?? node.y
         node.angle = config?.angle ?? node.angle
 
+        node.scaleX = config?.scaleX ?? node.scaleX
+
         const animation = node.getComponent(cc.Animation)
         const sound = node.getComponent(cc.AudioSource)
 
         animation?.play()
         sound?.play()
 
-        animation.on(cc.Animation.EventType.FINISHED, () => {
+        animation?.on(cc.Animation.EventType.FINISHED, () => {
             if (parent) {
                 parent.removeChild(node)
             }

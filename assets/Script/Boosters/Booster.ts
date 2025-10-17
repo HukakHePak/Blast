@@ -56,6 +56,10 @@ export default class Booster extends cc.Component {
     }
 
     onTouch() {
+        if(this.count <=0 ) {
+            return
+        }
+
         if (this.isActive) {
             this.resetPickedBLock()
             this.boostersController.deactivate()

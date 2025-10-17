@@ -42,14 +42,34 @@ export default class BombBlock extends cc.Component {
                     }
                 }
 
+                Animates.play(game.media.mcExplosion, {
+                    x: this.node.x,
+                    y: this.node.y,
+                    target: mapNode
+                } as AnimatesConfig)
+
                 break;
 
             case BlockTypes.BOMB_M:
-                mapController.reset()
                 game.levelController.fire(mapHeight * mapWidth - 1)
 
                 game.trembleScreenNode.getComponentInChildren(cc.Animation)?.play()
-                Animates.play(game.media.explosion, { target: mapNode, x: mapNode.width / 2, y: mapNode.height / 2 })
+
+                Animates.play(game.media.megumin, {
+                    target: mapNode,
+                    y: 0,
+                    ...selectAny([{ x: 0 }, { x: mapNode.width, scaleX: -1 }])
+                })
+
+                Animates.play(game.media.explosion, {
+                    target: mapNode,
+                    x: mapNode.width / 2,
+                    y: mapNode.height / 2
+                })
+
+                this.scheduleOnce(() => {
+                    mapController.reset()
+                }, game.animationDurability)
 
                 return;
 

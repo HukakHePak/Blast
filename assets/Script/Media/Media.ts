@@ -17,7 +17,13 @@ export default class Media extends cc.Component {
     lux: cc.Node = null;
 
     @property(cc.Node)
+    megumin: cc.Node = null
+
+    @property(cc.Node)
     explosion: cc.Node = null
+
+    @property(cc.Node)
+    mcExplosion: cc.Node = null
 
     @property(cc.Node)
     screamsNode: cc.Node = null

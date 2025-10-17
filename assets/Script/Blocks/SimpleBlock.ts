@@ -106,11 +106,6 @@ export default class SimplelBlock extends cc.Component {
             return
         }
 
-        const mapNode = this.mapController.mapNode
-
-
-
-
         if (BombTypes.includes(this.type)) {
             this.getComponent(BombBlock).onTouch()
 

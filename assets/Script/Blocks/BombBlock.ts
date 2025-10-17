@@ -65,8 +65,8 @@ export default class BombBlock extends cc.Component {
                 })
                 
                 this.scheduleOnce(() => {
-                    game.levelController.fire(mapHeight * mapWidth - 1)
                     mapController.reset()
+                    game.levelController.fire(mapHeight * mapWidth - 1)
                     game.trembleScreenNode.getComponentInChildren(cc.Animation)?.play()
                 }, game.animationDurability / 2)
 
@@ -89,7 +89,7 @@ export default class BombBlock extends cc.Component {
                 Animates.play(game.media.lux, {
                     y: this.node.y,
                     target: mapNode,
-                    ...selectAny([{ x: mapNode.width }, { scaleX: -game.media.lux.scaleX }])
+                    ...selectAny([{ x: mapNode.width }, { x: 0, scaleX: -game.media.lux.scaleX }])
                 } as AnimatesConfig)
                 break;
 

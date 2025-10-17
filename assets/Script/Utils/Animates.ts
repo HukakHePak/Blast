@@ -39,7 +39,7 @@ export default class Animates {
         animation?.play()
         sound?.play()
 
-        animation.on(cc.Animation.EventType.FINISHED, () => {
+        animation?.on(cc.Animation.EventType.FINISHED, () => {
             if (parent) {
                 parent.removeChild(node)
             }

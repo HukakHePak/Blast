@@ -42,6 +42,12 @@ export default class BombBlock extends cc.Component {
                     }
                 }
 
+                Animates.play(game.media.mcExplosion, {
+                    x: this.node.x,
+                    y: this.node.y,
+                    target: mapNode
+                } as AnimatesConfig)
+
                 break;
 
             case BlockTypes.BOMB_M:

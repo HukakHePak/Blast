@@ -27,6 +27,8 @@ export default class BombBlock extends cc.Component {
     onTouch() {
         if (this.isTouched) return
 
+        this.isTouched = true
+
         const { game, mapController, type, column, row } = this.parent
         const { bombRadius, mapHeight, mapWidth, mapNode } = mapController
 
@@ -46,8 +48,8 @@ export default class BombBlock extends cc.Component {
                 mapController.reset()
                 game.levelController.fire(mapHeight * mapWidth - 1)
 
+                game.trembleScreenNode.getComponentInChildren(cc.Animation)?.play()
                 Animates.play(game.media.explosion, { target: mapNode, x: mapNode.width / 2, y: mapNode.height / 2 })
-                Animates.play(game.trembleScreenNode)
 
                 return;
 

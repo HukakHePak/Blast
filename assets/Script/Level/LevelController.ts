@@ -62,19 +62,19 @@ export default class LevelController extends cc.Component {
     onLoad() {
 
     }
-    
+
     start() {
         this.victoryNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
         this.defeatNode.on(cc.Node.EventType.TOUCH_START, () => this.restart())
 
     }
-    
+
     init(game: Game) {
         this.mapController = this.mapNode.getComponent(MapController)
         this.boostersController = this.boostersNode.getComponent(BoostersController)
-        
+
         this.game = game
-        
+
         this.boostersController.init(game)
     }
 
@@ -107,38 +107,44 @@ export default class LevelController extends cc.Component {
     victory() {
         this.victoryNode.active = true
         this.mapController.clear()
+        this.victoryNode.getComponentInChildren(cc.Animation)?.play()
+
     }
-    
+
     defeat() {
         this.defeatNode.active = true
         this.mapController.clear()
+        this.defeatNode.getComponentInChildren(cc.Animation)?.play()
     }
-    
+
     restart() {
         this.victoryNode.active = false
         this.defeatNode.active = false
         this.steps = 0
         this.scores = 0
         this.mapShakes = 0
-        
-        // this.mapController.clear()
 
         this.generateLevel()
     }
 
     generateLevel() {
-        const height =  Math.round(selectBetween(this.minMapSize, this.maxMapSize))
+        const height = Math.round(selectBetween(this.minMapSize, this.maxMapSize))
         const width = Math.round(selectBetween(this.minMapSize, this.maxMapSize))
 
         this.mapController.mapHeight = height
         this.mapController.mapWidth = width
 
-        this.scoresLimit = width * height * Math.round(selectBetween(3, 9))
-
-        this.stepsLimit = Math.round(this.scoresLimit / Math.ceil(Math.min(width, height) / 2))
+        this.scoresLimit = width * height * Math.round(selectBetween(2, 5))
+        this.stepsLimit = Math.round(this.scoresLimit / (Math.ceil(Math.min(width, height)  * 0.75)))
 
         this.boostersController.updateCount(BoosterType.BOMB, Math.round(Math.sqrt(width * height)))
         this.boostersController.updateCount(BoosterType.TELEPORT, Math.round(Math.sqrt(width * height) * 1.5))
+
+        // this.scoresLimit = 30
+        // this.stepsLimit = 10
+
+        // this.boostersController.updateCount(BoosterType.BOMB, 5)
+        // this.boostersController.updateCount(BoosterType.TELEPORT, 3)
 
         this.mapController.init()
     }

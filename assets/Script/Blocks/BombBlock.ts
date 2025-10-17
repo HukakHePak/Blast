@@ -51,8 +51,7 @@ export default class BombBlock extends cc.Component {
                 break;
 
             case BlockTypes.BOMB_M:
-                game.levelController.fire(mapHeight * mapWidth - 1)
-
+                
                 Animates.play(game.media.megumin, {
                     target: mapNode,
                     y: 0,
@@ -66,6 +65,7 @@ export default class BombBlock extends cc.Component {
                 })
                 
                 this.scheduleOnce(() => {
+                    game.levelController.fire(mapHeight * mapWidth - 1)
                     mapController.reset()
                     game.trembleScreenNode.getComponentInChildren(cc.Animation)?.play()
                 }, game.animationDurability / 2)

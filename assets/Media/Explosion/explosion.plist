@@ -314,13 +314,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>Explosion.png</string>
+            <string>explosion.png</string>
             <key>size</key>
             <string>{3600,2880}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:d6a24db1f00b408704e75ca700c99c84:8095f453311c3d38dd8b5851e3cc70f5:fe049886709682b4c74f6865e9893d85$</string>
+            <string>$TexturePacker:SmartUpdate:fd6546e8591110a535eadc1debb402c8:8095f453311c3d38dd8b5851e3cc70f5:c5a2c42043f2b0dda1e7e7adb0cc6144$</string>
             <key>textureFileName</key>
-            <string>Explosion.png</string>
+            <string>explosion.png</string>
         </dict>
     </dict>
 </plist>

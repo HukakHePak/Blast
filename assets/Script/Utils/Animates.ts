@@ -27,7 +27,7 @@ export default class Animates {
 
         node.active = true
 
-        node.zIndex +=1
+        node.zIndex +=10
 
         node.x = config?.x ?? node.x
         node.y = config?.y ?? node.y
@@ -39,11 +39,13 @@ export default class Animates {
         animation?.play()
         sound?.play()
 
-        if (parent) {
-            animation.on(cc.Animation.EventType.FINISHED, () => {
+        animation.on(cc.Animation.EventType.FINISHED, () => {
+            if (parent) {
                 parent.removeChild(node)
-            })
-        }
+            }
+
+            node.zIndex = 0
+        })
     }
 
     despawn(node: cc.Node, config?: AnimatesConfig) {

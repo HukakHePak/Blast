@@ -24,7 +24,6 @@ export default class Booster extends cc.Component {
 
     pickedBlock: SimplelBlock = null
 
-
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
@@ -41,7 +40,33 @@ export default class Booster extends cc.Component {
 
     }
 
+    get isActive(): boolean {
+        return this.boostersController.active === this
+    }
+
+    resetPickedBLock() {
+        if(!this.pickedBlock) return
+
+        const { game } = this.boostersController
+
+        this.pickedBlock.node.angle = 0
+        this.pickedBlock = null
+
+        game.media.sounds.getSound('helicopter').stop()
+    }
+
     onTouch() {
+        if(this.count <=0 ) {
+            return
+        }
+
+        if (this.isActive) {
+            this.resetPickedBLock()
+            this.boostersController.deactivate()
+
+            return
+        }
+
         this.boostersController.activate(this)
 
         const { game } = this.boostersController
@@ -52,23 +77,39 @@ export default class Booster extends cc.Component {
     }
 
     use(block: SimplelBlock) {
+        const { game } = this.boostersController
 
-        const { mapController } = this.boostersController.game.levelController
+        const { mapController } = game.levelController
 
         switch (this.type) {
             case BoosterType.BOMB:
-                mapController.removeBlock(block)
-                this.boostersController.game.levelController.fire(1)
+                cc.tween(block.node)
+                    .to(game.animationDurability * (1 - game.longAnimationMultiplier), { scale: 1 })
+                    .to(game.animationDurability * game.longAnimationMultiplier, { scale: 0 })
+                    .call(() => {
+                        block.remove()
+                    })
+                    .start()
 
                 mapController.createBlock(block.column, block.row, BlockTypes.BOMB)
 
                 break;
 
             case BoosterType.TELEPORT:
+                if (this.pickedBlock === block) {
+                    game.media.sounds.playSound('alert')
+                    return
+                }
+
                 if (this.pickedBlock) {
                     mapController.swapBlocks(this.pickedBlock, block)
+                    game.media.sounds.playSound('airplane')
+                    this.resetPickedBLock()
+
                 } else {
                     this.pickedBlock = block
+
+                    game.media.sounds.playSound('helicopter')
                     return;
                 }
                 break;
@@ -92,5 +133,9 @@ export default class Booster extends cc.Component {
 
     update(dt) {
         this.labelCount.string = `${this.count}`
+
+        if (this.pickedBlock) {
+            this.pickedBlock.node.angle += (this.count % 2 ? 1 : -1) * this.boostersController.game.animationDurability * dt * 1000
+        }
     }
 }
